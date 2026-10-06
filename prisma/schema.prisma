@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model KartuKeluarga {
+  id Int @id @default(autoincrement())
+
+  noKkHash       String @unique @map("no_kk_hash") @db.VarChar(64)
+  noKkCiphertext String @map("no_kk_ciphertext") @db.Text
+  noKkIv         String @map("no_kk_iv") @db.VarChar(64)
+  noKkAuthTag    String @map("no_kk_auth_tag") @db.VarChar(64)
+
+  kepalaKeluarga String? @map("kepala_keluarga")
+  alamat         String?
+
+  rt String? @db.VarChar(3)
+  rw String? @db.VarChar(3)
+
+  desaKelurahan String? @map("desa_kelurahan")
+  kecamatan     String?
+  kabupatenKota String? @map("kabupaten_kota")
+
+  kodePos  String? @map("kode_pos") @db.VarChar(5)
+  provinsi String?
+
+  anggota AnggotaKeluarga[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("kartu_keluarga")
+}
+
+model AnggotaKeluarga {
+  id Int @id @default(autoincrement())
+
+  kkId Int @map("kk_id")
+
+  kk KartuKeluarga @relation(fields: [kkId], references: [id], onDelete: Cascade)
+
+  noUrut Int @map("no_urut")
+
+  nama String
+
+  nikHash       String @map("nik_hash") @db.VarChar(64)
+  nikCiphertext String @map("nik_ciphertext") @db.Text
+  nikIv         String @map("nik_iv") @db.VarChar(64)
+  nikAuthTag    String @map("nik_auth_tag") @db.VarChar(64)
+
+  jenisKelamin String? @map("jenis_kelamin")
+  tempatLahir  String? @map("tempat_lahir")
+  tanggalLahir String? @map("tanggal_lahir")
+
+  agama         String?
+  pendidikan    String?
+  pekerjaan     String?
+  golonganDarah String? @map("golongan_darah")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([kkId, nikHash])
+  @@index([kkId])
+  @@index([nikHash])
+  @@map("anggota_keluarga")
+}
