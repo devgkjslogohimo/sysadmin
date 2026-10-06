@@ -220,9 +220,8 @@ function parseRtRw(value: string | null) {
   }
 
   return {
-    rt: match[1] ?? null,
-
-    rw: match[2] ?? null,
+    rt: match[1],
+    rw: match[2],
   }
 }
 

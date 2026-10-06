@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -116,9 +115,13 @@ export function CreateKKDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-6 py-5">
+        <form
+          id="create-kk-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-6 py-5"
+        >
           <KKFormFields form={form} disabled={form.formState.isSubmitting} />
-        </div>
+        </form>
 
         <DialogFooter className="shrink-0 border-t bg-background px-6 py-4">
           <Button

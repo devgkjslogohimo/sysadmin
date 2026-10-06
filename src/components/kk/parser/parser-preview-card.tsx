@@ -86,36 +86,10 @@ export function ParserPreviewCard({
               )}
             </Button>
 
-            <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b bg-slate-50/60 px-4 py-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={onToggleSensitive}
-              >
-                {showSensitive ? (
-                  <>
-                    <EyeOff className="size-4" />
-                    Sembunyikan Data
-                  </>
-                ) : (
-                  <>
-                    <Eye className="size-4" />
-                    Tampilkan Data
-                  </>
-                )}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={onCopy}
-              >
-                <Copy className="size-4" />
-                Copy JSON
-              </Button>
-            </div>
+            <Button type="button" variant="outline" size="sm" onClick={onCopy}>
+              <Copy className="size-4" />
+              Copy JSON
+            </Button>
           </div>
 
           <CardContent className="min-h-136.25 max-h-162.5 overflow-auto bg-slate-950 p-0">

@@ -115,34 +115,18 @@ const OCCUPATIONS = new Set([
 export function parseMembers(rawText: string): KKMember[] {
   const lines = normalizeLines(rawText)
 
-  /*
-   * PRIORITAS 1
-   *
-   * Format baru:
-   *
-   * 1
-   * TES1
-   * NIK
-   * LAKI-LAKI
-   * ...
-   *
-   * 2
-   * TES2
-   * ...
-   */
   const numbered = parseNumberedMembers(lines)
+  const nikAnchored = parseNikAnchoredMembers(lines)
 
-  if (numbered.length > 0) {
-    return numbered
+  if (numbered.length === 0) {
+    return nikAnchored
   }
 
-  /*
-   * PRIORITAS 2
-   *
-   * Fallback untuk OCR lama
-   * yang nomor barisnya hilang.
-   */
-  return parseNikAnchoredMembers(lines)
+  if (nikAnchored.length > numbered.length) {
+    return nikAnchored
+  }
+
+  return numbered
 }
 
 /* ======================================================

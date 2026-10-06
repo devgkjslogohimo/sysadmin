@@ -214,7 +214,7 @@ export function EditKKDialog({ id, open, onOpenChange, onSaved }: Props) {
         </div>
 
         {isLoading ? (
-          <div className="flex min-h-[350px] items-center justify-center">
+          <div className="flex min-h-87.5 items-center justify-center">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
               Memuat data...

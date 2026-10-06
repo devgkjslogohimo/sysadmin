@@ -167,12 +167,15 @@ function DataAnggotaPage() {
     (updater: SortingState | ((old: SortingState) => SortingState)) => {
       const next = typeof updater === 'function' ? updater(sorting) : updater
 
-      const first = next[0]
-
-      if (!first || !allowedSorts.has(first.id)) {
+      if (next.length === 0) {
         return
       }
 
+      const first = next[0]
+
+      if (!allowedSorts.has(first.id)) {
+        return
+      }
       void navigate({
         search: (previous) => ({
           ...previous,
@@ -212,7 +215,7 @@ function DataAnggotaPage() {
 
   return (
     <main className="min-h-screen bg-slate-50/80">
-      <div className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <div className="mx-auto w-full max-w-375 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         <AnggotaListHeader total={result.pagination.total} />
 
         <AnggotaListTable
@@ -238,7 +241,7 @@ function DataAnggotaPage() {
 function DataAnggotaPending() {
   return (
     <main className="min-h-screen bg-slate-50/80">
-      <div className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <div className="mx-auto w-full max-w-375 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         <div className="mb-6">
           <div className="mb-2 h-9 w-80 rounded bg-slate-200" />
 

@@ -169,9 +169,13 @@ function DataKKPage() {
     (updater: SortingState | ((old: SortingState) => SortingState)) => {
       const next = typeof updater === 'function' ? updater(sorting) : updater
 
+      if (next.length === 0) {
+        return
+      }
+
       const first = next[0]
 
-      if (!first || !allowedSorts.has(first.id)) {
+      if (!allowedSorts.has(first.id)) {
         return
       }
 
