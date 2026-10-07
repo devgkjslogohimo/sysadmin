@@ -7,12 +7,14 @@ import { encryptValue } from '../security/encrypt.server'
 import { hashIdentityNumber } from '../security/hash.server'
 
 import { kkSchema } from '@/lib/kk-parser/schema'
+import { requireAdmin } from '../auth/session.server'
 
 export const saveKK = createServerFn({
   method: 'POST',
 })
   .validator(kkSchema)
   .handler(async ({ data }) => {
+    await requireAdmin()
     const noKkHash = hashIdentityNumber(data.noKK)
 
     const encryptedNoKK = encryptValue(data.noKK)

@@ -3,12 +3,14 @@ import { createServerFn } from '@tanstack/react-start'
 import { db } from '../db.server'
 
 import { hapusPetugasEventSchema, tambahPetugasEventSchema } from './schemas'
+import { requireHealthAccess } from '../auth/session.server'
 
 export const tambahPetugasEvent = createServerFn({
   method: 'POST',
 })
   .validator(tambahPetugasEventSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const existing = await db.petugasEvent.findFirst({
       where: {
         eventId: data.eventId,
@@ -43,6 +45,7 @@ export const hapusPetugasEvent = createServerFn({
 })
   .validator(hapusPetugasEventSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     await db.petugasEvent.delete({
       where: {
         id: data.id,

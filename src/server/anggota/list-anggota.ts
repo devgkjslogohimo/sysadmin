@@ -9,12 +9,14 @@ import { maskIdentityNumber } from '../kk/utils.server'
 import { buildAnggotaOrderBy, buildAnggotaWhere } from './list-query.server'
 
 import { listAnggotaSchema } from './schemas'
+import { requireAdmin } from '../auth/session.server'
 
 export const listAnggota = createServerFn({
   method: 'GET',
 })
   .validator(listAnggotaSchema)
   .handler(async ({ data }) => {
+    await requireAdmin()
     const { page, limit, q, searchBy, sortBy, sortOrder } = data
 
     const where = buildAnggotaWhere(q, searchBy)

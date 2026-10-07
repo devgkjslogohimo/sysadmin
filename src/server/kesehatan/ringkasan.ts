@@ -3,12 +3,14 @@ import { createServerFn } from '@tanstack/react-start'
 import { db } from '../db.server'
 
 import { riwayatPemeriksaanSchema } from './schemas'
+import { requireHealthAccess } from '../auth/session.server'
 
 export const getRingkasanKesehatan = createServerFn({
   method: 'GET',
 })
   .validator(riwayatPemeriksaanSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const [jumlahPemeriksaan, terakhir] = await Promise.all([
       db.pemeriksaanKesehatan.count({
         where: {

@@ -10,7 +10,7 @@ type Props = {
 export function KKParserHeader({ onAddManual }: Props) {
   return (
     <section className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="h-1 bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400" />
+      <div className="h-1 bg-linear-to-r from-blue-600 via-blue-500 to-sky-400" />
 
       <div className="flex flex-col gap-5 px-5 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0 flex-1">

@@ -78,7 +78,7 @@ Alamat ...
 ...`}
           spellCheck={false}
           className="
-            min-h-[380px]
+            min-h-95
             resize-y
             rounded-none
             border-0
@@ -89,8 +89,8 @@ Alamat ...
             leading-6
             shadow-none
             focus-visible:ring-0
-            sm:min-h-[440px]
-            lg:min-h-[500px]
+            sm:min-h-110
+            lg:min-h-125
           "
         />
 

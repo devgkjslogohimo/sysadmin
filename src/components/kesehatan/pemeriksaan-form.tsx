@@ -1,17 +1,23 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+
 import {
   Activity,
+  AlertCircle,
   ClipboardCheck,
   FlaskConical,
   Ruler,
   UsersRound,
 } from 'lucide-react'
+
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+
 import type { UseFormRegisterReturn } from 'react-hook-form'
+
 import { toast } from 'sonner'
 
 import { FormField } from '@/components/kesehatan/form-field'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -22,6 +28,7 @@ import {
 } from '@/server/kesehatan'
 
 import { pemeriksaanKesehatanFieldsSchema } from '@/server/kesehatan/schemas'
+
 import type { PemeriksaanKesehatanFormValues } from '@/server/kesehatan/schemas'
 
 type PetugasEventItem = {
@@ -69,7 +76,9 @@ function getFormValues(
   initialValues?: PemeriksaanAwal,
 ): PemeriksaanKesehatanFormValues {
   if (!initialValues) {
-    return emptyValues
+    return {
+      ...emptyValues,
+    }
   }
 
   return {
@@ -94,9 +103,18 @@ const numberInputOptions = {
       return null
     }
 
-    const number = Number(value)
+    /*
+     * Keyboard Indonesia dapat menggunakan koma
+     * sebagai separator desimal.
+     *
+     * 5,7 → 5.7
+     */
+    const normalized =
+      typeof value === 'string' ? value.replace(',', '.') : value
 
-    return Number.isNaN(number) ? value : number
+    const number = Number(normalized)
+
+    return Number.isNaN(number) ? normalized : number
   },
 }
 
@@ -112,6 +130,11 @@ export function PemeriksaanForm({
     resolver: zodResolver(pemeriksaanKesehatanFieldsSchema),
 
     defaultValues: getFormValues(initialValues),
+
+    shouldFocusError: true,
+
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   })
 
   const {
@@ -122,9 +145,17 @@ export function PemeriksaanForm({
     formState: { errors, isSubmitting },
   } = form
 
+  /*
+   * PENTING:
+   *
+   * Reset bukan hanya ketika initialValues berubah.
+   * Pemeriksaan baru selalu memiliki initialValues
+   * undefined, sehingga anggotaId juga harus menjadi
+   * dependency.
+   */
   useEffect(() => {
     reset(getFormValues(initialValues))
-  }, [initialValues, reset])
+  }, [anggotaId, eventId, initialValues, reset])
 
   async function onSubmit(values: PemeriksaanKesehatanFormValues) {
     try {
@@ -162,8 +193,40 @@ export function PemeriksaanForm({
     }
   }
 
+  function onInvalid() {
+    toast.error('Periksa kembali data pemeriksaan', {
+      description: 'Ada nilai yang belum sesuai. Periksa kolom yang ditandai.',
+    })
+  }
+
+  const hasPetugas = petugas.length > 0
+
   return (
-    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit, onInvalid)}>
+      {!hasPetugas ? (
+        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3.5">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white text-red-600 ring-1 ring-red-200">
+            <AlertCircle className="size-4" />
+          </div>
+
+          <div>
+            <div className="text-sm font-semibold text-red-800">
+              Belum ada petugas event
+            </div>
+
+            <p className="mt-1 text-xs leading-5 text-red-700">
+              Tambahkan petugas event terlebih dahulu sebelum menyimpan
+              pemeriksaan.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      <p className="text-xs leading-5 text-slate-400">
+        Kolom pemeriksaan dapat dikosongkan jika pemeriksaan tersebut tidak
+        dilakukan.
+      </p>
+
       {/* TANDA VITAL */}
       <section>
         <SectionTitle
@@ -181,10 +244,18 @@ export function PemeriksaanForm({
             <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] items-center gap-2">
               <Input
                 type="number"
+                min="1"
+                step="1"
                 inputMode="numeric"
+                enterKeyHint="next"
                 placeholder="120"
                 disabled={isSubmitting}
-                className="h-10 rounded-lg border-slate-200 bg-white text-center shadow-none"
+                autoFocus={!initialValues}
+                aria-invalid={Boolean(errors.tensiSistolik)}
+                className={[
+                  'h-10 rounded-lg bg-white text-center shadow-none',
+                  errors.tensiSistolik ? 'border-red-300' : 'border-slate-200',
+                ].join(' ')}
                 {...register('tensiSistolik', numberInputOptions)}
               />
 
@@ -192,10 +263,17 @@ export function PemeriksaanForm({
 
               <Input
                 type="number"
+                min="1"
+                step="1"
                 inputMode="numeric"
+                enterKeyHint="next"
                 placeholder="80"
                 disabled={isSubmitting}
-                className="h-10 rounded-lg border-slate-200 bg-white text-center shadow-none"
+                aria-invalid={Boolean(errors.tensiDiastolik)}
+                className={[
+                  'h-10 rounded-lg bg-white text-center shadow-none',
+                  errors.tensiDiastolik ? 'border-red-300' : 'border-slate-200',
+                ].join(' ')}
                 {...register('tensiDiastolik', numberInputOptions)}
               />
 
@@ -218,6 +296,8 @@ export function PemeriksaanForm({
           <NumberField
             label="Gula Darah"
             suffix="mg/dL"
+            min="1"
+            step="1"
             disabled={isSubmitting}
             error={errors.gulaDarah?.message}
             registration={register('gulaDarah', numberInputOptions)}
@@ -226,6 +306,8 @@ export function PemeriksaanForm({
           <NumberField
             label="Kolesterol"
             suffix="mg/dL"
+            min="1"
+            step="1"
             disabled={isSubmitting}
             error={errors.kolesterol?.message}
             registration={register('kolesterol', numberInputOptions)}
@@ -234,6 +316,7 @@ export function PemeriksaanForm({
           <NumberField
             label="Asam Urat"
             suffix="mg/dL"
+            min="0.1"
             step="0.1"
             disabled={isSubmitting}
             error={errors.asamUrat?.message}
@@ -253,6 +336,7 @@ export function PemeriksaanForm({
           <NumberField
             label="Berat Badan"
             suffix="kg"
+            min="0.1"
             step="0.1"
             disabled={isSubmitting}
             error={errors.beratBadan?.message}
@@ -262,6 +346,7 @@ export function PemeriksaanForm({
           <NumberField
             label="Tinggi Badan"
             suffix="cm"
+            min="0.1"
             step="0.1"
             disabled={isSubmitting}
             error={errors.tinggiBadan?.message}
@@ -283,6 +368,7 @@ export function PemeriksaanForm({
               {...register('keluhan')}
               disabled={isSubmitting}
               placeholder="Keluhan warga..."
+              maxLength={1000}
               className="min-h-24 resize-y rounded-lg border-slate-200 bg-white shadow-none"
             />
           </FormField>
@@ -292,6 +378,7 @@ export function PemeriksaanForm({
               {...register('hasilRingkas')}
               disabled={isSubmitting}
               placeholder="Catatan atau hasil pemeriksaan..."
+              maxLength={1000}
               className="min-h-24 resize-y rounded-lg border-slate-200 bg-white shadow-none"
             />
           </FormField>
@@ -310,7 +397,7 @@ export function PemeriksaanForm({
               Petugas Event
             </div>
 
-            {petugas.length > 0 ? (
+            {hasPetugas ? (
               <p className="mt-1 text-xs leading-5 text-slate-500">
                 {petugas.map((item) => item.nama).join(', ')}
               </p>
@@ -321,17 +408,17 @@ export function PemeriksaanForm({
             )}
           </div>
 
-          {petugas.length > 0 && (
+          {hasPetugas ? (
             <span className="shrink-0 rounded-md bg-white px-2 py-1 text-[11px] font-medium text-slate-500 ring-1 ring-slate-200">
               {petugas.length}
             </span>
-          )}
+          ) : null}
         </div>
       </section>
 
       {/* ACTION */}
       <div className="flex flex-col-reverse gap-2 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
-        {onCancel && (
+        {onCancel ? (
           <Button
             type="button"
             variant="outline"
@@ -341,12 +428,12 @@ export function PemeriksaanForm({
           >
             Batal
           </Button>
-        )}
+        ) : null}
 
         <Button
           type="submit"
           className="h-10 rounded-lg sm:min-w-44"
-          disabled={isSubmitting || petugas.length === 0}
+          disabled={isSubmitting || !hasPetugas}
         >
           {isSubmitting
             ? 'Menyimpan...'
@@ -377,7 +464,10 @@ function SectionTitle({ icon, title }: SectionTitleProps) {
 type NumberFieldProps = {
   label: string
   suffix: string
+
+  min?: string
   step?: string
+
   disabled?: boolean
   error?: string
 
@@ -387,6 +477,7 @@ type NumberFieldProps = {
 function NumberField({
   label,
   suffix,
+  min,
   step,
   disabled,
   error,
@@ -394,12 +485,21 @@ function NumberField({
 }: NumberFieldProps) {
   return (
     <FormField label={label} error={error}>
-      <div className="flex h-10 overflow-hidden rounded-lg border border-slate-200 bg-white focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
+      <div
+        className={[
+          'flex h-10 overflow-hidden rounded-lg border bg-white',
+          'focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50',
+          error ? 'border-red-300' : 'border-slate-200',
+        ].join(' ')}
+      >
         <Input
           type="number"
+          min={min}
           step={step}
           inputMode="decimal"
+          enterKeyHint="next"
           disabled={disabled}
+          aria-invalid={Boolean(error)}
           {...registration}
           className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0"
         />

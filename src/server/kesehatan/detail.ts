@@ -6,12 +6,14 @@ import { hashIdentityNumber } from '../security/hash.server'
 import { maskIdentityNumber } from '../kk/utils.server'
 
 import { eventKesehatanIdSchema, searchWargaKesehatanSchema } from './schemas'
+import { requireHealthAccess } from '../auth/session.server'
 
 export const getEventKesehatan = createServerFn({
   method: 'GET',
 })
   .validator(eventKesehatanIdSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const event = await db.eventKesehatan.findUnique({
       where: {
         id: data.id,
@@ -65,6 +67,7 @@ export const searchWargaKesehatan = createServerFn({
 })
   .validator(searchWargaKesehatanSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const q = data.q.trim()
 
     const digits = q.replace(/\D/g, '')

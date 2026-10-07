@@ -9,12 +9,14 @@ import { hashIdentityNumber } from '../../security/hash.server'
 import { assertLocalSensitiveMode } from './guard.server'
 
 import { updateKKLocalSchema } from './schemas'
+import { requireAdmin } from '#/server/auth/session.server'
 
 export const updateKKLocal = createServerFn({
   method: 'POST',
 })
   .validator(updateKKLocalSchema)
   .handler(async ({ data }) => {
+    await requireAdmin()
     assertLocalSensitiveMode()
 
     const { id, kk } = data

@@ -2,7 +2,9 @@ import {
   Activity,
   CalendarDays,
   ClipboardList,
+  Clock3,
   History,
+  UserRound,
   UsersRound,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -20,12 +22,14 @@ export function RiwayatPemeriksaan({ anggotaId, refreshKey = 0 }: Props) {
   const [data, setData] = useState<Riwayat[]>([])
 
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
 
     async function load() {
       setIsLoading(true)
+      setError(null)
 
       try {
         const result = await getRiwayatPemeriksaan({
@@ -36,6 +40,16 @@ export function RiwayatPemeriksaan({ anggotaId, refreshKey = 0 }: Props) {
 
         if (!cancelled) {
           setData(result)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setData([])
+
+          setError(
+            error instanceof Error
+              ? error.message
+              : 'Gagal memuat riwayat kesehatan.',
+          )
         }
       } finally {
         if (!cancelled) {
@@ -81,6 +95,22 @@ export function RiwayatPemeriksaan({ anggotaId, refreshKey = 0 }: Props) {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-3">
+        <RiwayatHeader count={null} />
+
+        <div className="rounded-xl border border-red-200 bg-red-50/60 px-5 py-6 text-center">
+          <div className="text-sm font-semibold text-red-800">
+            Riwayat kesehatan gagal dimuat
+          </div>
+
+          <p className="mt-1 text-xs leading-5 text-red-700">{error}</p>
         </div>
       </div>
     )
@@ -222,6 +252,45 @@ export function RiwayatPemeriksaan({ anggotaId, refreshKey = 0 }: Props) {
                   )}
                 </div>
               )}
+
+              {/* AUDIT PENCATATAN */}
+              <div className="mt-4 border-t border-slate-100 pt-4">
+                <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">
+                  Riwayat Pencatatan
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <AuditItem
+                    icon={<UserRound className="size-4" />}
+                    label="Dicatat oleh"
+                    value={
+                      item.createdBy
+                        ? `${item.createdBy.nama} (${formatRole(
+                            item.createdBy.role,
+                          )})`
+                        : '-'
+                    }
+                    description={formatDateTime(item.createdAt)}
+                  />
+
+                  <AuditItem
+                    icon={<Clock3 className="size-4" />}
+                    label={
+                      item.updatedAt !== item.createdAt
+                        ? 'Terakhir diubah oleh'
+                        : 'Terakhir diperbarui'
+                    }
+                    value={
+                      item.updatedBy
+                        ? `${item.updatedBy.nama} (${formatRole(
+                            item.updatedBy.role,
+                          )})`
+                        : '-'
+                    }
+                    description={formatDateTime(item.updatedAt)}
+                  />
+                </div>
+              </div>
             </div>
           </article>
         ))}
@@ -299,6 +368,38 @@ function CatatanItem({ label, value }: { label: string; value: string }) {
   )
 }
 
+function AuditItem({
+  icon,
+  label,
+  value,
+  description,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: string
+  description: string
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3.5">
+      <div className="flex items-start gap-3">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white text-slate-500 ring-1 ring-slate-200">
+          {icon}
+        </div>
+
+        <div className="min-w-0">
+          <div className="text-xs font-medium text-slate-400">{label}</div>
+
+          <div className="mt-1 truncate text-sm font-semibold text-slate-800">
+            {value}
+          </div>
+
+          <div className="mt-0.5 text-xs text-slate-500">{description}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function formatTanggal(value: string) {
   const [year, month, day] = value.split('-').map(Number)
 
@@ -307,4 +408,21 @@ function formatTanggal(value: string) {
     month: 'long',
     year: 'numeric',
   }).format(new Date(year, month - 1, day))
+}
+
+function formatRole(role: 'ADMIN' | 'PETUGAS') {
+  return role === 'ADMIN' ? 'Administrator' : 'Petugas'
+}
+
+function formatDateTime(value: string) {
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return '-'
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date)
 }

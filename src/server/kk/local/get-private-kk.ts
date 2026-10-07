@@ -7,12 +7,14 @@ import { decryptValue } from '../../security/encrypt.server'
 import { assertLocalSensitiveMode } from './guard.server'
 
 import { privateKKSchema } from './schemas'
+import { requireAdmin } from '#/server/auth/session.server'
 
 export const getKKPrivateLocal = createServerFn({
   method: 'GET',
 })
   .validator(privateKKSchema)
   .handler(async ({ data }) => {
+    await requireAdmin()
     assertLocalSensitiveMode()
 
     const row = await db.kartuKeluarga.findUnique({

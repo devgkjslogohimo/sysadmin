@@ -3,11 +3,18 @@ import {
   Database,
   FileJson2,
   HeartPulse,
+  KeyRound,
+  LogOut,
   Menu,
   UsersRound,
   X,
 } from 'lucide-react'
-import { Link, useRouterState } from '@tanstack/react-router'
+import {
+  getRouteApi,
+  Link,
+  useRouter,
+  useRouterState,
+} from '@tanstack/react-router'
 import { useState } from 'react'
 
 import type { ReactNode } from 'react'
@@ -21,7 +28,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+import { logout } from '@/server/auth/actions.functions'
+
+import { AuthUserMenu } from './auth-user-menu'
+
+const rootRoute = getRouteApi('__root__')
+
 export function SiteNavbar() {
+  const { user } = rootRoute.useRouteContext()
+
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })
@@ -39,12 +54,14 @@ export function SiteNavbar() {
     setMobileOpen(false)
   }
 
+  const homeTarget = user?.role === 'PETUGAS' ? '/event-kesehatan' : '/'
+
   return (
     <header className="sticky top-0 z-40 border-b border-blue-100/70 bg-white/85 shadow-[0_1px_12px_rgba(15,23,42,0.025)] backdrop-blur-xl supports-backdrop-filter:bg-white/80">
       <div className="relative mx-auto flex h-21.5 w-full max-w-7xl items-center px-4 sm:px-6 lg:px-8">
         {/* BRAND */}
         <Link
-          to="/"
+          to={homeTarget}
           className="group flex shrink-0 items-center gap-3"
           onClick={closeMobileMenu}
         >
@@ -79,197 +96,266 @@ export function SiteNavbar() {
         </div>
 
         {/* DESKTOP MENU */}
-        <nav className="ml-auto hidden items-center gap-1.5 lg:flex">
-          <DesktopLink to="/" active={pathname === '/'}>
-            Beranda
-          </DesktopLink>
+        {user ? (
+          <nav className="ml-auto hidden items-center gap-1.5 lg:flex">
+            {user.role === 'ADMIN' ? (
+              <>
+                <DesktopLink to="/" active={pathname === '/'}>
+                  Beranda
+                </DesktopLink>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button type="button" className={navClass(dataActive)}>
-                Data
-                <ChevronDown className="size-3.5 opacity-60" />
-              </button>
-            </DropdownMenuTrigger>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button type="button" className={navClass(dataActive)}>
+                      Data
+                      <ChevronDown className="size-3.5 opacity-60" />
+                    </button>
+                  </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              align="center"
-              sideOffset={10}
-              className="w-64 rounded-xl border-blue-100/80 p-2 shadow-xl shadow-slate-900/5"
-            >
-              <DropdownMenuLabel className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-                Database Jemaat
-              </DropdownMenuLabel>
+                  <DropdownMenuContent
+                    align="center"
+                    sideOffset={10}
+                    className="w-64 rounded-xl border-blue-100/80 p-2 shadow-xl shadow-slate-900/5"
+                  >
+                    <DropdownMenuLabel className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                      Database Jemaat
+                    </DropdownMenuLabel>
 
-              <DropdownMenuSeparator />
+                    <DropdownMenuSeparator />
 
-              <DropdownMenuItem asChild className="rounded-lg p-0">
-                <Link
-                  to="/data-kk"
-                  className="flex w-full items-start gap-3 px-3 py-2.5"
-                >
-                  <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                    <Database className="size-4" />
-                  </div>
+                    <DropdownMenuItem asChild className="rounded-lg p-0">
+                      <Link
+                        to="/data-kk"
+                        className="flex w-full items-start gap-3 px-3 py-2.5"
+                      >
+                        <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                          <Database className="size-4" />
+                        </div>
 
-                  <div>
-                    <div className="text-sm font-medium text-slate-800">
-                      Data Kartu Keluarga
-                    </div>
+                        <div>
+                          <div className="text-sm font-medium text-slate-800">
+                            Data Kartu Keluarga
+                          </div>
 
-                    <div className="mt-0.5 text-xs text-slate-400">
-                      Kelola database keluarga
-                    </div>
-                  </div>
-                </Link>
-              </DropdownMenuItem>
+                          <div className="mt-0.5 text-xs text-slate-400">
+                            Kelola database keluarga
+                          </div>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
 
-              <DropdownMenuItem asChild className="mt-1 rounded-lg p-0">
-                <Link
-                  to="/data-anggota"
-                  className="flex w-full items-start gap-3 px-3 py-2.5"
-                >
-                  <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                    <UsersRound className="size-4" />
-                  </div>
+                    <DropdownMenuItem asChild className="mt-1 rounded-lg p-0">
+                      <Link
+                        to="/data-anggota"
+                        className="flex w-full items-start gap-3 px-3 py-2.5"
+                      >
+                        <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                          <UsersRound className="size-4" />
+                        </div>
 
-                  <div>
-                    <div className="text-sm font-medium text-slate-800">
-                      Data Anggota
-                    </div>
+                        <div>
+                          <div className="text-sm font-medium text-slate-800">
+                            Data Anggota
+                          </div>
 
-                    <div className="mt-0.5 text-xs text-slate-400">
-                      Lihat seluruh anggota jemaat
-                    </div>
-                  </div>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                          <div className="mt-0.5 text-xs text-slate-400">
+                            Lihat seluruh anggota jemaat
+                          </div>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
-          <DesktopLink to="/event-kesehatan" active={kesehatanActive}>
-            Kesehatan
-          </DesktopLink>
+                <DesktopLink to="/event-kesehatan" active={kesehatanActive}>
+                  Kesehatan
+                </DesktopLink>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button type="button" className={navClass(fiturActive)}>
-                Fitur
-                <ChevronDown className="size-3.5 opacity-60" />
-              </button>
-            </DropdownMenuTrigger>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button type="button" className={navClass(fiturActive)}>
+                      Fitur
+                      <ChevronDown className="size-3.5 opacity-60" />
+                    </button>
+                  </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              align="end"
-              sideOffset={10}
-              className="w-64 rounded-xl border-blue-100/80 p-2 shadow-xl shadow-slate-900/5"
-            >
-              <DropdownMenuLabel className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-                Fitur
-              </DropdownMenuLabel>
+                  <DropdownMenuContent
+                    align="end"
+                    sideOffset={10}
+                    className="w-64 rounded-xl border-blue-100/80 p-2 shadow-xl shadow-slate-900/5"
+                  >
+                    <DropdownMenuLabel className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                      Fitur
+                    </DropdownMenuLabel>
 
-              <DropdownMenuSeparator />
+                    <DropdownMenuSeparator />
 
-              <DropdownMenuItem asChild className="rounded-lg p-0">
-                <Link
-                  to="/fitur/parser-kk"
-                  className="flex w-full items-start gap-3 px-3 py-2.5"
-                >
-                  <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                    <FileJson2 className="size-4" />
-                  </div>
+                    <DropdownMenuItem asChild className="rounded-lg p-0">
+                      <Link
+                        to="/fitur/parser-kk"
+                        className="flex w-full items-start gap-3 px-3 py-2.5"
+                      >
+                        <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                          <FileJson2 className="size-4" />
+                        </div>
 
-                  <div>
-                    <div className="text-sm font-medium text-slate-800">
-                      Parser KK
-                    </div>
+                        <div>
+                          <div className="text-sm font-medium text-slate-800">
+                            Parser KK
+                          </div>
 
-                    <div className="mt-0.5 text-xs text-slate-400">
-                      Konversi data KK menjadi terstruktur
-                    </div>
-                  </div>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </nav>
+                          <div className="mt-0.5 text-xs text-slate-400">
+                            Konversi data KK menjadi terstruktur
+                          </div>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <DesktopLink to="/event-kesehatan" active={kesehatanActive}>
+                Kesehatan
+              </DesktopLink>
+            )}
+
+            <AuthUserMenu />
+          </nav>
+        ) : null}
 
         {/* MOBILE BUTTON */}
-        <div className="ml-auto lg:hidden">
-          <button
-            type="button"
-            className="flex size-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
-            aria-label={mobileOpen ? 'Tutup menu' : 'Buka menu'}
-            aria-expanded={mobileOpen}
-            onClick={() => setMobileOpen((current) => !current)}
-          >
-            {mobileOpen ? (
-              <X className="size-5" />
-            ) : (
-              <Menu className="size-5" />
-            )}
-          </button>
-        </div>
+        {user ? (
+          <div className="ml-auto lg:hidden">
+            <button
+              type="button"
+              className="flex size-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white text-slate-600 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+              aria-label={mobileOpen ? 'Tutup menu' : 'Buka menu'}
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((current) => !current)}
+            >
+              {mobileOpen ? (
+                <X className="size-5" />
+              ) : (
+                <Menu className="size-5" />
+              )}
+            </button>
+          </div>
+        ) : null}
       </div>
 
       {/* MOBILE NAV */}
-      {mobileOpen && (
+      {user && mobileOpen ? (
         <div className="border-t border-blue-100/70 bg-white/95 shadow-lg backdrop-blur-xl lg:hidden">
           <nav className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
             <div className="space-y-1">
+              {user.role === 'ADMIN' ? (
+                <>
+                  <MobileLink
+                    to="/"
+                    active={pathname === '/'}
+                    onClick={closeMobileMenu}
+                  >
+                    Beranda
+                  </MobileLink>
+
+                  <MobileSection title="Data Jemaat" />
+
+                  <MobileLink
+                    to="/data-kk"
+                    active={pathname.startsWith('/data-kk')}
+                    onClick={closeMobileMenu}
+                    icon={<Database className="size-4" />}
+                  >
+                    Data Kartu Keluarga
+                  </MobileLink>
+
+                  <MobileLink
+                    to="/data-anggota"
+                    active={pathname.startsWith('/data-anggota')}
+                    onClick={closeMobileMenu}
+                    icon={<UsersRound className="size-4" />}
+                  >
+                    Data Anggota
+                  </MobileLink>
+
+                  <MobileSection title="Pelayanan" />
+
+                  <MobileLink
+                    to="/event-kesehatan"
+                    active={kesehatanActive}
+                    onClick={closeMobileMenu}
+                    icon={<HeartPulse className="size-4" />}
+                  >
+                    Kesehatan
+                  </MobileLink>
+
+                  <MobileSection title="Fitur" />
+
+                  <MobileLink
+                    to="/fitur/parser-kk"
+                    active={fiturActive}
+                    onClick={closeMobileMenu}
+                    icon={<FileJson2 className="size-4" />}
+                  >
+                    Parser KK
+                  </MobileLink>
+
+                  <MobileSection title="Administrator" />
+
+                  <MobileLink
+                    to="/admin/users"
+                    active={pathname.startsWith('/admin/users')}
+                    onClick={closeMobileMenu}
+                    icon={<UsersRound className="size-4" />}
+                  >
+                    Kelola User
+                  </MobileLink>
+                </>
+              ) : (
+                <>
+                  <MobileSection title="Pelayanan" />
+
+                  <MobileLink
+                    to="/event-kesehatan"
+                    active={kesehatanActive}
+                    onClick={closeMobileMenu}
+                    icon={<HeartPulse className="size-4" />}
+                  >
+                    Kesehatan
+                  </MobileLink>
+                </>
+              )}
+
+              <MobileSection title="Akun" />
+
               <MobileLink
-                to="/"
-                active={pathname === '/'}
+                to="/akun"
+                active={pathname === '/akun'}
                 onClick={closeMobileMenu}
+                icon={<KeyRound className="size-4" />}
               >
-                Beranda
+                Ganti Password
               </MobileLink>
 
-              <MobileSection title="Data Jemaat" />
+              <div className="mt-4 border-t border-slate-100 pt-4">
+                <div className="mb-3 px-3">
+                  <div className="text-sm font-semibold text-slate-800">
+                    {user.nama}
+                  </div>
 
-              <MobileLink
-                to="/data-kk"
-                active={pathname.startsWith('/data-kk')}
-                onClick={closeMobileMenu}
-                icon={<Database className="size-4" />}
-              >
-                Data Kartu Keluarga
-              </MobileLink>
+                  <div className="mt-0.5 text-xs text-slate-400">
+                    {user.role === 'ADMIN'
+                      ? 'Administrator'
+                      : 'Petugas Kesehatan'}
+                  </div>
+                </div>
 
-              <MobileLink
-                to="/data-anggota"
-                active={pathname.startsWith('/data-anggota')}
-                onClick={closeMobileMenu}
-                icon={<UsersRound className="size-4" />}
-              >
-                Data Anggota
-              </MobileLink>
-
-              <MobileSection title="Pelayanan" />
-
-              <MobileLink
-                to="/event-kesehatan"
-                active={kesehatanActive}
-                onClick={closeMobileMenu}
-                icon={<HeartPulse className="size-4" />}
-              >
-                Kesehatan
-              </MobileLink>
-
-              <MobileSection title="Fitur" />
-
-              <MobileLink
-                to="/fitur/parser-kk"
-                active={fiturActive}
-                onClick={closeMobileMenu}
-                icon={<FileJson2 className="size-4" />}
-              >
-                Parser KK
-              </MobileLink>
+                <MobileLogoutButton />
+              </div>
             </div>
           </nav>
         </div>
-      )}
+      ) : null}
     </header>
   )
 }
@@ -292,7 +378,7 @@ function DesktopLink({ to, active, children }: DesktopLinkProps) {
 function navClass(active: boolean) {
   return [
     'relative flex h-10 items-center gap-1.5 rounded-full px-4',
-    'text-sm font-medium transition-all duration-200',
+    'text-sm font-medium transition-[background-color,color,box-shadow] duration-200',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30',
     active
       ? 'bg-blue-50 text-blue-700 shadow-[inset_0_0_0_1px_rgba(59,130,246,0.08)]'
@@ -302,14 +388,17 @@ function navClass(active: boolean) {
 
 type MobileLinkProps = {
   to:
-    '/' | '/data-kk' | '/data-anggota' | '/event-kesehatan' | '/fitur/parser-kk'
+    | '/'
+    | '/data-kk'
+    | '/data-anggota'
+    | '/event-kesehatan'
+    | '/fitur/parser-kk'
+    | '/admin/users'
+    | '/akun'
 
   active: boolean
-
   onClick: () => void
-
   icon?: ReactNode
-
   children: ReactNode
 }
 
@@ -321,10 +410,10 @@ function MobileLink({ to, active, onClick, icon, children }: MobileLinkProps) {
       className={
         active
           ? 'flex items-center gap-3 rounded-xl bg-blue-50 px-3.5 py-3 text-sm font-medium text-blue-700'
-          : 'flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-blue-600'
+          : 'flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-blue-600'
       }
     >
-      {icon && (
+      {icon ? (
         <div
           className={
             active
@@ -334,7 +423,7 @@ function MobileLink({ to, active, onClick, icon, children }: MobileLinkProps) {
         >
           {icon}
         </div>
-      )}
+      ) : null}
 
       {children}
     </Link>
@@ -346,5 +435,29 @@ function MobileSection({ title }: { title: string }) {
     <div className="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
       {title}
     </div>
+  )
+}
+
+function MobileLogoutButton() {
+  const router = useRouter()
+
+  async function handleLogout() {
+    await logout()
+
+    await router.navigate({
+      to: '/login',
+      replace: true,
+    })
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => void handleLogout()}
+      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+    >
+      <LogOut className="size-4" />
+      Keluar
+    </button>
   )
 }

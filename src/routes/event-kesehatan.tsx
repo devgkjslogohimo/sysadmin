@@ -1,13 +1,11 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-
-import { CalendarHeart, ClipboardList, SearchX } from 'lucide-react'
+import { createFileRoute, getRouteApi, useRouter } from '@tanstack/react-router'
+import { CalendarHeart, ClipboardList, HeartPulse, SearchX } from 'lucide-react'
 
 import { CreateEventForm } from '@/components/kesehatan/create-event-form'
 import { EventListToolbar } from '@/components/kesehatan/event-list-toolbar'
+import { EventList } from '@/components/kesehatan/event-list'
 
 import type { EventStatus } from '@/components/kesehatan/event-list-toolbar'
-
-import { EventList } from '@/components/kesehatan/event-list'
 
 import { DataCountBadge } from '@/components/data-list/data-count-badge'
 import { DataListHero } from '@/components/data-list/data-list-hero'
@@ -29,6 +27,8 @@ type EventKesehatanSearch = {
 
   tahun?: number
 }
+
+const rootRoute = getRouteApi('__root__')
 
 function validateSearch(search: Record<string, unknown>): EventKesehatanSearch {
   const result: EventKesehatanSearch = {}
@@ -108,6 +108,8 @@ export const Route = createFileRoute('/event-kesehatan')({
 })
 
 function EventKesehatanPage() {
+  const { user } = rootRoute.useRouteContext()
+
   const result = Route.useLoaderData()
 
   const search = Route.useSearch()
@@ -117,6 +119,10 @@ function EventKesehatanPage() {
   const router = useRouter()
 
   const events = result.data
+
+  const isPetugas = user?.role === 'PETUGAS'
+
+  const activeEvents = events.filter((event) => !event.isClosed)
 
   const status: EventStatus = search.status ?? 'all'
 
@@ -199,24 +205,62 @@ function EventKesehatanPage() {
   return (
     <DataListPage>
       <DataListHero
-        icon={<CalendarHeart className="size-5" />}
-        eyebrow="Kesehatan Jemaat"
-        title="Event Kesehatan"
-        description="Kelola kegiatan pemeriksaan kesehatan warga, mulai dari pembuatan event hingga pencatatan hasil pemeriksaan."
+        icon={
+          isPetugas ? (
+            <HeartPulse className="size-5" />
+          ) : (
+            <CalendarHeart className="size-5" />
+          )
+        }
+        eyebrow={isPetugas ? 'Pelayanan Kesehatan' : 'Kesehatan Jemaat'}
+        title={isPetugas ? 'Pelayanan Event Kesehatan' : 'Event Kesehatan'}
+        description={
+          isPetugas
+            ? 'Kelola kegiatan pemeriksaan kesehatan jemaat, cari warga, dan catat hasil pemeriksaan melalui event yang sedang berjalan.'
+            : 'Kelola kegiatan pemeriksaan kesehatan warga, mulai dari pembuatan event hingga pencatatan hasil pemeriksaan.'
+        }
         badge={
           <DataCountBadge>
             {hasFilter
               ? `${result.pagination.total.toLocaleString(
                   'id-ID',
                 )} event ditemukan`
-              : result.pagination.total > 0
-                ? `${result.pagination.total.toLocaleString(
-                    'id-ID',
-                  )} event tersimpan`
-                : 'Belum ada event'}
+              : activeEvents.length > 0
+                ? `${activeEvents.length.toLocaleString('id-ID')} event aktif`
+                : result.pagination.total > 0
+                  ? `${result.pagination.total.toLocaleString(
+                      'id-ID',
+                    )} event tersimpan`
+                  : 'Belum ada event'}
           </DataCountBadge>
         }
       />
+
+      {isPetugas && activeEvents.length > 0 ? (
+        <section className="mb-6 overflow-hidden rounded-2xl border border-blue-200 bg-blue-50/40 shadow-sm">
+          <div className="border-b border-blue-100 bg-white/70 px-5 py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                <HeartPulse className="size-5" />
+              </div>
+
+              <div>
+                <h2 className="font-semibold text-slate-900">
+                  Event Sedang Aktif
+                </h2>
+
+                <p className="mt-0.5 text-xs text-slate-500">
+                  Pilih event untuk mulai pelayanan dan pencatatan pemeriksaan.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 sm:p-5">
+            <EventList events={activeEvents} />
+          </div>
+        </section>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
         <aside className="min-w-0 lg:sticky lg:top-28 lg:self-start">
@@ -236,7 +280,9 @@ function EventKesehatanPage() {
                 </div>
 
                 <div className="min-w-0">
-                  <h2 className="font-semibold text-slate-900">Daftar Event</h2>
+                  <h2 className="font-semibold text-slate-900">
+                    {isPetugas ? 'Seluruh Event' : 'Daftar Event'}
+                  </h2>
 
                   <p className="mt-0.5 text-xs text-slate-500">
                     {result.pagination.total > 0
@@ -282,7 +328,7 @@ function EventKesehatanPage() {
             )}
           </div>
 
-          {result.pagination.total > 0 && (
+          {result.pagination.total > 0 ? (
             <div className="border-t border-slate-200 bg-slate-50/50 px-4 py-4 sm:px-5">
               <DataPagination
                 pagination={result.pagination}
@@ -290,7 +336,7 @@ function EventKesehatanPage() {
                 onPageSizeChange={handlePageSizeChange}
               />
             </div>
-          )}
+          ) : null}
         </section>
       </div>
     </DataListPage>

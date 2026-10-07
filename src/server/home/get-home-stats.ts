@@ -1,10 +1,12 @@
 import { createServerFn } from '@tanstack/react-start'
 
 import { db } from '../db.server'
+import { requireAdmin } from '../auth/session.server'
 
 export const getHomeStats = createServerFn({
   method: 'GET',
 }).handler(async () => {
+  await requireAdmin()
   const [totalKK, totalAnggota, events, latestEvent] = await Promise.all([
     db.kartuKeluarga.count(),
 

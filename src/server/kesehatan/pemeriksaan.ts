@@ -10,12 +10,14 @@ import {
 } from './schemas'
 import { decryptValue } from '../security/encrypt.server'
 import { maskIdentityNumber } from '../kk/utils.server'
+import { requireHealthAccess } from '../auth/session.server'
 
 export const savePemeriksaanKesehatan = createServerFn({
   method: 'POST',
 })
   .validator(savePemeriksaanKesehatanSchema)
   .handler(async ({ data }) => {
+    const currentUser = await requireHealthAccess()
     const existing = await db.pemeriksaanKesehatan.findUnique({
       where: {
         eventId_anggotaId: {
@@ -39,6 +41,9 @@ export const savePemeriksaanKesehatan = createServerFn({
       data: {
         eventId: data.eventId,
         anggotaId: data.anggotaId,
+
+        createdByUserId: currentUser.id,
+        updatedByUserId: currentUser.id,
 
         tensiSistolik: data.tensiSistolik,
         tensiDiastolik: data.tensiDiastolik,
@@ -67,6 +72,7 @@ export const getRiwayatPemeriksaan = createServerFn({
 })
   .validator(riwayatPemeriksaanSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const rows = await db.pemeriksaanKesehatan.findMany({
       where: {
         anggotaId: data.anggotaId,
@@ -99,6 +105,27 @@ export const getRiwayatPemeriksaan = createServerFn({
         keluhan: true,
         hasilRingkas: true,
 
+        createdAt: true,
+        updatedAt: true,
+
+        createdBy: {
+          select: {
+            id: true,
+            nama: true,
+            username: true,
+            role: true,
+          },
+        },
+
+        updatedBy: {
+          select: {
+            id: true,
+            nama: true,
+            username: true,
+            role: true,
+          },
+        },
+
         event: {
           select: {
             id: true,
@@ -122,6 +149,12 @@ export const getRiwayatPemeriksaan = createServerFn({
 
     return rows.map((row) => ({
       id: row.id,
+
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+
+      createdBy: row.createdBy,
+      updatedBy: row.updatedBy,
 
       tensiSistolik: row.tensiSistolik,
       tensiDiastolik: row.tensiDiastolik,
@@ -151,6 +184,7 @@ export const listPemeriksaanEvent = createServerFn({
 })
   .validator(listPemeriksaanEventSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const rows = await db.pemeriksaanKesehatan.findMany({
       where: {
         eventId: data.eventId,
@@ -173,6 +207,27 @@ export const listPemeriksaanEvent = createServerFn({
 
         keluhan: true,
         hasilRingkas: true,
+
+        createdAt: true,
+        updatedAt: true,
+
+        createdBy: {
+          select: {
+            id: true,
+            nama: true,
+            username: true,
+            role: true,
+          },
+        },
+
+        updatedBy: {
+          select: {
+            id: true,
+            nama: true,
+            username: true,
+            role: true,
+          },
+        },
 
         event: {
           select: {
@@ -215,6 +270,12 @@ export const listPemeriksaanEvent = createServerFn({
         nama: row.anggota.nama,
         nik: maskIdentityNumber(nik),
 
+        createdAt: row.createdAt.toISOString(),
+        updatedAt: row.updatedAt.toISOString(),
+
+        createdBy: row.createdBy,
+        updatedBy: row.updatedBy,
+
         tensiSistolik: row.tensiSistolik,
         tensiDiastolik: row.tensiDiastolik,
         gulaDarah: row.gulaDarah,
@@ -235,6 +296,7 @@ export const updatePemeriksaanKesehatan = createServerFn({
 })
   .validator(updatePemeriksaanKesehatanSchema)
   .handler(async ({ data }) => {
+    const currentUser = await requireHealthAccess()
     const existing = await db.pemeriksaanKesehatan.findUnique({
       where: {
         id: data.id,
@@ -279,6 +341,8 @@ export const updatePemeriksaanKesehatan = createServerFn({
 
         keluhan: data.keluhan || null,
         hasilRingkas: data.hasilRingkas || null,
+
+        updatedByUserId: currentUser.id,
       },
 
       select: {

@@ -7,12 +7,14 @@ import { decryptValue } from '../security/encrypt.server'
 import { kkDetailSchema } from './schemas'
 
 import { maskIdentityNumber } from './utils.server'
+import { requireAdmin } from '../auth/session.server'
 
 export const getKKDetail = createServerFn({
   method: 'GET',
 })
   .validator(kkDetailSchema)
   .handler(async ({ data }) => {
+    await requireAdmin()
     const row = await db.kartuKeluarga.findUnique({
       where: {
         id: data.id,

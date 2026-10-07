@@ -9,7 +9,7 @@ import {
   UsersRound,
   X,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { SelectedWargaKesehatan } from '@/components/kesehatan/selected-warga-kesehatan'
 import { useWargaKesehatanSearch } from '@/components/kesehatan/use-warga-kesehatan-search'
@@ -40,6 +40,8 @@ export function WargaKesehatanSection({
   refreshKey,
   onChanged,
 }: Props) {
+  const searchInputRef = useRef<HTMLInputElement>(null)
+
   const { q, setQ, results, isSearching, hasSearched, error, markAsExamined } =
     useWargaKesehatanSearch({
       eventId,
@@ -48,25 +50,38 @@ export function WargaKesehatanSection({
 
   const [selected, setSelected] = useState<WargaKesehatan | null>(null)
 
+  const [savedWargaName, setSavedWargaName] = useState<string | null>(null)
+
   async function handleSaved() {
     if (!selected) {
       return
     }
 
     const anggotaId = selected.id
+    const wargaName = selected.nama
 
-    setSelected((current) =>
-      current
-        ? {
-            ...current,
-            sudahDiperiksa: true,
-          }
-        : current,
-    )
-
+    /*
+     * Tandai hasil pencarian lokal terlebih dahulu
+     * supaya warga langsung terlihat sudah diperiksa.
+     */
     markAsExamined(anggotaId)
 
+    /*
+     * Siapkan workflow untuk warga berikutnya.
+     */
+    setSelected(null)
+    setQ('')
+    setSavedWargaName(wargaName)
+
     await onChanged()
+
+    /*
+     * Setelah kembali ke pencarian, langsung fokus
+     * sehingga petugas dapat mengetik warga berikutnya.
+     */
+    requestAnimationFrame(() => {
+      searchInputRef.current?.focus()
+    })
   }
 
   function handleSelect(warga: WargaKesehatan) {
@@ -74,11 +89,29 @@ export function WargaKesehatanSection({
       return
     }
 
+    setSavedWargaName(null)
     setSelected(warga)
   }
 
   function handleChangeWarga() {
     setSelected(null)
+
+    requestAnimationFrame(() => {
+      searchInputRef.current?.focus()
+    })
+  }
+
+  function handleSearchChange(value: string) {
+    setSavedWargaName(null)
+    setQ(value)
+  }
+
+  function handleClearSearch() {
+    setQ('')
+
+    requestAnimationFrame(() => {
+      searchInputRef.current?.focus()
+    })
   }
 
   const query = q.trim()
@@ -92,11 +125,32 @@ export function WargaKesehatanSection({
 
   const visibleResults = results.slice(0, MAX_VISIBLE_RESULTS)
 
+  const availableCount = results.filter((warga) => !warga.sudahDiperiksa).length
+
   return (
     <section className="space-y-4">
-      {/* SEARCH
-          Di mobile disembunyikan setelah warga dipilih.
-          Di desktop selalu tersedia. */}
+      {/* SUCCESS */}
+      {savedWargaName ? (
+        <div className="flex items-start gap-3 rounded-2xl border border-green-200 bg-green-50 px-4 py-4 text-green-800 shadow-sm sm:px-5">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+            <CheckCircle2 className="size-5" />
+          </div>
+
+          <div className="min-w-0">
+            <div className="text-sm font-semibold">
+              Pemeriksaan berhasil disimpan
+            </div>
+
+            <p className="mt-1 text-sm leading-6 text-green-700">
+              Data pemeriksaan{' '}
+              <span className="font-semibold">{savedWargaName}</span> telah
+              tersimpan. Silakan cari warga berikutnya.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      {/* SEARCH */}
       <Card
         className={[
           'overflow-hidden rounded-2xl border-slate-200 bg-white shadow-sm',
@@ -115,7 +169,7 @@ export function WargaKesehatanSection({
               </CardTitle>
 
               <p className="mt-0.5 text-xs text-slate-500">
-                Cari berdasarkan nama atau NIK lengkap.
+                Cari warga yang akan menjalani pemeriksaan.
               </p>
             </div>
           </div>
@@ -126,11 +180,13 @@ export function WargaKesehatanSection({
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
 
             <Input
+              ref={searchInputRef}
               value={q}
               autoComplete="off"
-              placeholder="Ketik nama atau NIK..."
+              placeholder="Ketik nama atau NIK lengkap..."
               className="h-11 rounded-lg border-slate-200 bg-white pl-9 pr-11 shadow-none"
-              onChange={(event) => setQ(event.target.value)}
+              onChange={(event) => handleSearchChange(event.target.value)}
+              autoFocus
             />
 
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -139,8 +195,8 @@ export function WargaKesehatanSection({
               ) : q ? (
                 <button
                   type="button"
-                  onClick={() => setQ('')}
-                  className="flex size-6 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                  onClick={handleClearSearch}
+                  className="flex size-6 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
                   aria-label="Hapus pencarian"
                 >
                   <X className="size-4" />
@@ -149,20 +205,29 @@ export function WargaKesehatanSection({
             </div>
           </div>
 
-          <p className="mt-2 text-xs leading-5 text-slate-400">
-            Untuk pencarian NIK, masukkan nomor secara lengkap.
-          </p>
+          <div className="mt-2 flex flex-col gap-1 text-xs leading-5 text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              Nama dapat diketik sebagian. Untuk NIK, masukkan nomor lengkap.
+            </p>
+
+            {query && results.length > 0 ? (
+              <p className="shrink-0">
+                {availableCount.toLocaleString('id-ID')} belum diperiksa
+              </p>
+            ) : null}
+          </div>
         </CardContent>
       </Card>
 
-      {error && (
+      {/* ERROR */}
+      {error ? (
         <div className="rounded-xl border border-red-200 bg-red-50/60 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
-      )}
+      ) : null}
 
-      {/* MOBILE: tombol kembali ke daftar warga */}
-      {selected && (
+      {/* MOBILE: KEMBALI */}
+      {selected ? (
         <div className="lg:hidden">
           <Button
             type="button"
@@ -174,17 +239,17 @@ export function WargaKesehatanSection({
             Ganti warga
           </Button>
         </div>
-      )}
+      ) : null}
 
       {/* WORKSPACE */}
       <div className="grid gap-4 lg:grid-cols-[340px_minmax(0,1fr)] lg:items-start">
-        {/* MASTER: HASIL PENCARIAN */}
+        {/* HASIL PENCARIAN */}
         <div className={selected ? 'hidden lg:block' : 'block'}>
           {visibleResults.length > 0 ? (
             <Card className="overflow-hidden rounded-2xl border-slate-200 bg-white shadow-sm lg:sticky lg:top-24">
               <CardHeader className="border-b border-slate-200 px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
-                  <div>
+                  <div className="min-w-0">
                     <CardTitle className="text-sm font-semibold text-slate-900">
                       Hasil Pencarian
                     </CardTitle>
@@ -225,12 +290,18 @@ export function WargaKesehatanSection({
                         <div
                           className={[
                             'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg',
-                            isSelected
-                              ? 'bg-blue-100 text-blue-600'
-                              : 'bg-slate-100 text-slate-500',
+                            isDisabled
+                              ? 'bg-green-50 text-green-600'
+                              : isSelected
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'bg-slate-100 text-slate-500',
                           ].join(' ')}
                         >
-                          <UserRound className="size-4" />
+                          {isDisabled ? (
+                            <CheckCircle2 className="size-4" />
+                          ) : (
+                            <UserRound className="size-4" />
+                          )}
                         </div>
 
                         <div className="min-w-0 flex-1">
@@ -239,16 +310,18 @@ export function WargaKesehatanSection({
                               {warga.nama}
                             </span>
 
-                            {isDisabled && (
-                              <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-slate-400" />
-                            )}
+                            {isDisabled ? (
+                              <span className="shrink-0 rounded-md bg-green-50 px-2 py-0.5 text-[10px] font-semibold text-green-700">
+                                Selesai
+                              </span>
+                            ) : null}
                           </div>
 
                           <div className="mt-1 truncate text-xs text-slate-500">
                             NIK {warga.nik}
                           </div>
 
-                          {(warga.alamat || warga.desaKelurahan) && (
+                          {warga.alamat || warga.desaKelurahan ? (
                             <div className="mt-1.5 flex min-w-0 items-center gap-1 text-xs text-slate-400">
                               <MapPin className="size-3 shrink-0" />
 
@@ -258,26 +331,20 @@ export function WargaKesehatanSection({
                                   .join(', ')}
                               </span>
                             </div>
-                          )}
-
-                          {isDisabled && (
-                            <div className="mt-2 text-[11px] font-medium text-slate-400">
-                              Sudah diperiksa
-                            </div>
-                          )}
+                          ) : null}
                         </div>
                       </button>
                     )
                   })}
                 </div>
 
-                {results.length > MAX_VISIBLE_RESULTS && (
-                  <div className="border-t border-slate-100 bg-slate-50/60 px-4 py-3 text-center text-xs text-slate-500">
+                {results.length > MAX_VISIBLE_RESULTS ? (
+                  <div className="border-t border-slate-100 bg-slate-50/60 px-4 py-3 text-center text-xs leading-5 text-slate-500">
                     Menampilkan {MAX_VISIBLE_RESULTS} dari{' '}
                     {results.length.toLocaleString('id-ID')} hasil. Persempit
                     pencarian untuk menemukan warga lainnya.
                   </div>
-                )}
+                ) : null}
               </CardContent>
             </Card>
           ) : showEmpty ? (
@@ -301,17 +368,17 @@ export function WargaKesehatanSection({
               </div>
 
               <div className="mt-3 text-sm font-semibold text-slate-700">
-                Belum ada warga dipilih
+                Cari warga
               </div>
 
               <p className="mt-1 text-xs leading-5 text-slate-500">
-                Gunakan pencarian di atas untuk menemukan warga.
+                Ketik nama atau NIK pada pencarian di atas.
               </p>
             </div>
           )}
         </div>
 
-        {/* DETAIL: FORM PEMERIKSAAN */}
+        {/* FORM PEMERIKSAAN */}
         <div className={selected ? 'block' : 'hidden lg:block'}>
           {selected ? (
             <SelectedWargaKesehatan

@@ -1,4 +1,9 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  redirect,
+} from '@tanstack/react-router'
 
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -8,8 +13,46 @@ import { SiteNavbar } from '@/components/layout/site-navbar'
 import { Toaster } from '@/components/ui/sonner'
 
 import appCss from '../styles.css?url'
+import { getCurrentUser } from '#/server/auth/actions.functions'
 
 export const Route = createRootRoute({
+  beforeLoad: async ({ location }) => {
+    const user = await getCurrentUser()
+
+    const isPublicRoute =
+      location.pathname === '/login' || location.pathname === '/setup-admin'
+
+    if (isPublicRoute) {
+      return {
+        user,
+      }
+    }
+
+    if (!user) {
+      throw redirect({
+        to: '/login',
+      })
+    }
+
+    if (user.role === 'PETUGAS') {
+      const isHealthRoute =
+        location.pathname === '/event-kesehatan' ||
+        location.pathname.startsWith('/event-kesehatan/')
+
+      const isAccountRoute = location.pathname === '/akun'
+
+      if (!isHealthRoute && !isAccountRoute) {
+        throw redirect({
+          to: '/event-kesehatan',
+        })
+      }
+    }
+
+    return {
+      user,
+    }
+  },
+
   head: () => ({
     meta: [
       {

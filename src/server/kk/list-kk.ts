@@ -5,12 +5,14 @@ import { db } from '../db.server'
 import { buildKKOrderBy, buildKKWhere } from './list-query.server'
 
 import { listKKSchema } from './schemas'
+import { requireAdmin } from '../auth/session.server'
 
 export const listKK = createServerFn({
   method: 'GET',
 })
   .validator(listKKSchema)
   .handler(async ({ data }) => {
+    await requireAdmin()
     const { page, limit, q, searchBy, sortBy, sortOrder } = data
 
     const where = buildKKWhere(q, searchBy)

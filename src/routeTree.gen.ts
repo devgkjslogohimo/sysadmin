@@ -10,9 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AkunRouteImport } from './routes/akun'
 import { Route as DataAnggotaRouteImport } from './routes/data-anggota'
 import { Route as DataKkRouteImport } from './routes/data-kk'
 import { Route as EventKesehatanRouteImport } from './routes/event-kesehatan'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as SetupAdminRouteImport } from './routes/setup-admin'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as DataAnggotaIdRouteImport } from './routes/data-anggota_.$id'
 import { Route as DataKkIdRouteImport } from './routes/data-kk_.$id'
 import { Route as EventKesehatanIdRouteImport } from './routes/event-kesehatan_.$id'
@@ -21,6 +25,11 @@ import { Route as FiturParserKkRouteImport } from './routes/fitur.parser-kk'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AkunRoute = AkunRouteImport.update({
+  id: '/akun',
+  path: '/akun',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DataAnggotaRoute = DataAnggotaRouteImport.update({
@@ -36,6 +45,21 @@ const DataKkRoute = DataKkRouteImport.update({
 const EventKesehatanRoute = EventKesehatanRouteImport.update({
   id: '/event-kesehatan',
   path: '/event-kesehatan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupAdminRoute = SetupAdminRouteImport.update({
+  id: '/setup-admin',
+  path: '/setup-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DataAnggotaIdRoute = DataAnggotaIdRouteImport.update({
@@ -61,9 +85,13 @@ const FiturParserKkRoute = FiturParserKkRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/akun': typeof AkunRoute
   '/data-anggota': typeof DataAnggotaRoute
   '/data-kk': typeof DataKkRoute
   '/event-kesehatan': typeof EventKesehatanRoute
+  '/login': typeof LoginRoute
+  '/setup-admin': typeof SetupAdminRoute
+  '/admin/users': typeof AdminUsersRoute
   '/data-anggota/$id': typeof DataAnggotaIdRoute
   '/data-kk/$id': typeof DataKkIdRoute
   '/event-kesehatan/$id': typeof EventKesehatanIdRoute
@@ -71,9 +99,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/akun': typeof AkunRoute
   '/data-anggota': typeof DataAnggotaRoute
   '/data-kk': typeof DataKkRoute
   '/event-kesehatan': typeof EventKesehatanRoute
+  '/login': typeof LoginRoute
+  '/setup-admin': typeof SetupAdminRoute
+  '/admin/users': typeof AdminUsersRoute
   '/data-anggota/$id': typeof DataAnggotaIdRoute
   '/data-kk/$id': typeof DataKkIdRoute
   '/event-kesehatan/$id': typeof EventKesehatanIdRoute
@@ -82,9 +114,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/akun': typeof AkunRoute
   '/data-anggota': typeof DataAnggotaRoute
   '/data-kk': typeof DataKkRoute
   '/event-kesehatan': typeof EventKesehatanRoute
+  '/login': typeof LoginRoute
+  '/setup-admin': typeof SetupAdminRoute
+  '/admin/users': typeof AdminUsersRoute
   '/data-anggota_/$id': typeof DataAnggotaIdRoute
   '/data-kk_/$id': typeof DataKkIdRoute
   '/event-kesehatan_/$id': typeof EventKesehatanIdRoute
@@ -94,9 +130,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/akun'
     | '/data-anggota'
     | '/data-kk'
     | '/event-kesehatan'
+    | '/login'
+    | '/setup-admin'
+    | '/admin/users'
     | '/data-anggota/$id'
     | '/data-kk/$id'
     | '/event-kesehatan/$id'
@@ -104,9 +144,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/akun'
     | '/data-anggota'
     | '/data-kk'
     | '/event-kesehatan'
+    | '/login'
+    | '/setup-admin'
+    | '/admin/users'
     | '/data-anggota/$id'
     | '/data-kk/$id'
     | '/event-kesehatan/$id'
@@ -114,9 +158,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/akun'
     | '/data-anggota'
     | '/data-kk'
     | '/event-kesehatan'
+    | '/login'
+    | '/setup-admin'
+    | '/admin/users'
     | '/data-anggota_/$id'
     | '/data-kk_/$id'
     | '/event-kesehatan_/$id'
@@ -125,9 +173,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AkunRoute: typeof AkunRoute
   DataAnggotaRoute: typeof DataAnggotaRoute
   DataKkRoute: typeof DataKkRoute
   EventKesehatanRoute: typeof EventKesehatanRoute
+  LoginRoute: typeof LoginRoute
+  SetupAdminRoute: typeof SetupAdminRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   DataAnggotaIdRoute: typeof DataAnggotaIdRoute
   DataKkIdRoute: typeof DataKkIdRoute
   EventKesehatanIdRoute: typeof EventKesehatanIdRoute
@@ -141,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/akun': {
+      id: '/akun'
+      path: '/akun'
+      fullPath: '/akun'
+      preLoaderRoute: typeof AkunRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/data-anggota': {
@@ -162,6 +221,27 @@ declare module '@tanstack/react-router' {
       path: '/event-kesehatan'
       fullPath: '/event-kesehatan'
       preLoaderRoute: typeof EventKesehatanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup-admin': {
+      id: '/setup-admin'
+      path: '/setup-admin'
+      fullPath: '/setup-admin'
+      preLoaderRoute: typeof SetupAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/data-anggota_/$id': {
@@ -197,9 +277,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AkunRoute: AkunRoute,
   DataAnggotaRoute: DataAnggotaRoute,
   DataKkRoute: DataKkRoute,
   EventKesehatanRoute: EventKesehatanRoute,
+  LoginRoute: LoginRoute,
+  SetupAdminRoute: SetupAdminRoute,
+  AdminUsersRoute: AdminUsersRoute,
   DataAnggotaIdRoute: DataAnggotaIdRoute,
   DataKkIdRoute: DataKkIdRoute,
   EventKesehatanIdRoute: EventKesehatanIdRoute,

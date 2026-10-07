@@ -5,12 +5,14 @@ import { maskIdentityNumber } from '../kk/utils.server'
 import { decryptValue } from '../security/encrypt.server'
 
 import { anggotaIdSchema } from './schemas'
+import { requireAdmin } from '../auth/session.server'
 
 export const getAnggotaDetail = createServerFn({
   method: 'GET',
 })
   .validator(anggotaIdSchema)
   .handler(async ({ data }) => {
+    await requireAdmin()
     const anggota = await db.anggotaKeluarga.findUnique({
       where: {
         id: data.id,

@@ -1,9 +1,11 @@
 import {
   ChevronDown,
   ChevronUp,
+  Clock3,
   Pencil,
   Search,
   Stethoscope,
+  UserRound,
   X,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
@@ -41,7 +43,7 @@ export function DaftarPemeriksaanEvent({
   readOnly = false,
   onChanged,
 }: Props) {
-  const { data, isLoading } = usePemeriksaanEvent({
+  const { data, isLoading, error } = usePemeriksaanEvent({
     eventId,
     refreshKey,
   })
@@ -121,6 +123,20 @@ export function DaftarPemeriksaanEvent({
       <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
         <CardContent className="py-10 text-center text-sm text-slate-500">
           Memuat daftar pemeriksaan...
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card className="rounded-2xl border-red-200 bg-white shadow-sm">
+        <CardContent className="px-6 py-10 text-center">
+          <div className="text-sm font-semibold text-red-800">
+            Daftar pemeriksaan gagal dimuat
+          </div>
+
+          <p className="mt-1 text-xs leading-5 text-red-700">{error}</p>
         </CardContent>
       </Card>
     )
@@ -454,8 +470,19 @@ function PemeriksaanDetail({
   item: PemeriksaanEventItem
   petugasText: string
 }) {
+  const createdByText = item.createdBy
+    ? `${item.createdBy.nama} (${formatRole(item.createdBy.role)})`
+    : '-'
+
+  const updatedByText = item.updatedBy
+    ? `${item.updatedBy.nama} (${formatRole(item.updatedBy.role)})`
+    : '-'
+
+  const hasBeenEdited = item.updatedAt !== item.createdAt
+
   return (
     <div className="space-y-5">
+      {/* HASIL PEMERIKSAAN */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <Metric
           label="Tekanan Darah"
@@ -485,13 +512,42 @@ function PemeriksaanDetail({
         />
       </div>
 
+      {/* CATATAN */}
       <div className="grid gap-4 border-t border-slate-100 pt-4 lg:grid-cols-2">
         <TextDetail label="Keluhan" value={item.keluhan} />
 
         <TextDetail label="Hasil Ringkas" value={item.hasilRingkas} />
       </div>
 
-      <TextDetail label="Petugas" value={petugasText} />
+      {/* PETUGAS EVENT */}
+      <div className="border-t border-slate-100 pt-4">
+        <TextDetail label="Petugas Event" value={petugasText} />
+      </div>
+
+      {/* AUDIT */}
+      <div className="border-t border-slate-100 pt-4">
+        <div className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+          Riwayat Pencatatan
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <AuditItem
+            icon={<UserRound className="size-4" />}
+            label="Dicatat oleh"
+            value={createdByText}
+            description={formatDateTime(item.createdAt)}
+          />
+
+          <AuditItem
+            icon={<Clock3 className="size-4" />}
+            label={
+              hasBeenEdited ? 'Terakhir diubah oleh' : 'Terakhir diperbarui'
+            }
+            value={updatedByText}
+            description={formatDateTime(item.updatedAt)}
+          />
+        </div>
+      </div>
     </div>
   )
 }
@@ -520,6 +576,38 @@ function TextDetail({ label, value }: { label: string; value: string | null }) {
   )
 }
 
+function AuditItem({
+  icon,
+  label,
+  value,
+  description,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: string
+  description: string
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3.5">
+      <div className="flex items-start gap-3">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white text-slate-500 ring-1 ring-slate-200">
+          {icon}
+        </div>
+
+        <div className="min-w-0">
+          <div className="text-xs font-medium text-slate-400">{label}</div>
+
+          <div className="mt-1 truncate text-sm font-semibold text-slate-800">
+            {value}
+          </div>
+
+          <div className="mt-0.5 text-xs text-slate-500">{description}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function formatTensi(sistolik: number | null, diastolik: number | null) {
   if (sistolik === null && diastolik === null) {
     return '-'
@@ -534,4 +622,21 @@ function formatNilai(value: number | null, suffix: string) {
   }
 
   return `${value.toLocaleString('id-ID')} ${suffix}`
+}
+
+function formatRole(role: 'ADMIN' | 'PETUGAS') {
+  return role === 'ADMIN' ? 'Administrator' : 'Petugas'
+}
+
+function formatDateTime(value: string) {
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return '-'
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date)
 }

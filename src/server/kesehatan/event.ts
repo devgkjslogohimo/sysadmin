@@ -9,12 +9,14 @@ import {
   listEventKesehatanSchema,
 } from './schemas'
 import type { Prisma } from '#/generated/prisma/client'
+import { requireHealthAccess } from '../auth/session.server'
 
 export const listEventKesehatan = createServerFn({
   method: 'GET',
 })
   .validator(listEventKesehatanSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const { page, limit, q, status, tahun } = data
 
     const where: Prisma.EventKesehatanWhereInput = {
@@ -141,6 +143,7 @@ export const createEventKesehatan = createServerFn({
 })
   .validator(createEventKesehatanSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const uniquePetugas = [
       ...new Map(
         data.petugas.map((nama) => [nama.trim().toLowerCase(), nama.trim()]),
@@ -174,6 +177,7 @@ export const updateEventKesehatan = createServerFn({
 })
   .validator(updateEventKesehatanSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const current = await db.eventKesehatan.findUnique({
       where: {
         id: data.id,
@@ -213,6 +217,7 @@ export const closeEventKesehatan = createServerFn({
 })
   .validator(eventKesehatanIdSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const event = await db.eventKesehatan.findUnique({
       where: {
         id: data.id,
@@ -253,6 +258,7 @@ export const deleteEventKesehatan = createServerFn({
 })
   .validator(eventKesehatanIdSchema)
   .handler(async ({ data }) => {
+    await requireHealthAccess()
     const event = await db.eventKesehatan.findUnique({
       where: {
         id: data.id,

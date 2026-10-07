@@ -100,6 +100,12 @@ model PemeriksaanKesehatan {
   event   EventKesehatan  @relation(fields: [eventId], references: [id])
   anggota AnggotaKeluarga @relation(fields: [anggotaId], references: [id])
 
+  createdByUserId Int? @map("created_by_user_id")
+  updatedByUserId Int? @map("updated_by_user_id")
+
+  createdBy User? @relation("PemeriksaanCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedBy User? @relation("PemeriksaanUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
   tensiSistolik  Int? @map("tensi_sistolik")
   tensiDiastolik Int? @map("tensi_diastolik")
 
@@ -115,10 +121,14 @@ model PemeriksaanKesehatan {
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
 
   @@unique([eventId, anggotaId])
   @@index([anggotaId])
   @@index([eventId])
+  @@index([createdByUserId])
+  @@index([updatedByUserId])
   @@map("pemeriksaan_kesehatan")
 }
 
@@ -135,4 +145,46 @@ model PetugasEvent {
   @@unique([eventId, nama])
   @@index([eventId])
   @@map("petugas_event")
+}
+
+enum UserRole {
+  ADMIN
+  PETUGAS
+}
+
+model User {
+  id Int @id @default(autoincrement())
+
+  nama         String
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  role         UserRole @default(PETUGAS)
+  isActive     Boolean  @default(true) @map("is_active")
+
+  sessions Session[]
+
+  pemeriksaanDibuat PemeriksaanKesehatan[] @relation("PemeriksaanCreatedBy")
+  pemeriksaanDiubah PemeriksaanKesehatan[] @relation("PemeriksaanUpdatedBy")
+
+  createdAt             DateTime               @default(now()) @map("created_at")
+  updatedAt             DateTime               @updatedAt @map("updated_at")
+  pemeriksaanKesehatans PemeriksaanKesehatan[]
+
+  @@map("users")
+}
+
+model Session {
+  id Int @id @default(autoincrement())
+
+  tokenHash String @unique @map("token_hash") @db.VarChar(64)
+
+  userId Int  @map("user_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
 }

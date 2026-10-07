@@ -65,7 +65,7 @@ export function ParserPreviewCard({
 
       {!data ? (
         /* EMPTY */
-        <CardContent className="flex min-h-[500px] flex-1 items-center justify-center bg-slate-50/30 p-6 sm:min-h-[560px]">
+        <CardContent className="flex min-h-125 flex-1 items-center justify-center bg-slate-50/30 p-6 sm:min-h-140">
           <div className="max-w-sm text-center">
             <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-white text-slate-400 ring-1 ring-slate-200">
               <Braces className="size-5" />
