@@ -1,4 +1,4 @@
-import { IdCard } from 'lucide-react'
+import { IdCard, MapPin } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -35,46 +35,81 @@ export function KKInfoCard({
   const rtRw = rt || rw ? `${rt ?? '-'} / ${rw ?? '-'}` : null
 
   return (
-    <Card className="mb-6 overflow-hidden border-slate-200 shadow-sm">
-      <CardHeader className="border-b bg-slate-50/60 px-5 py-4 sm:px-6">
-        <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-lg border bg-white">
-            <IdCard className="size-4 text-slate-600" />
+    <Card className="overflow-hidden rounded-2xl border-slate-200 bg-white shadow-sm">
+      <CardHeader className="border-b border-slate-200 px-5 py-4 sm:px-6">
+        <div className="flex items-start gap-3">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+            <IdCard className="size-4" />
           </div>
 
-          <div>
-            <CardTitle className="text-base">
+          <div className="min-w-0">
+            <CardTitle className="text-base font-semibold text-slate-900">
               Informasi Kartu Keluarga
             </CardTitle>
 
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Data identitas dan wilayah keluarga
+            <p className="mt-0.5 text-xs leading-5 text-slate-500">
+              Identitas utama dan alamat keluarga
             </p>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="p-0">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3">
+        {/* IDENTITAS UTAMA */}
+        <div className="grid border-b border-slate-100 md:grid-cols-2">
           <InfoItem label="Nomor KK" value={noKK} mono />
 
           <InfoItem label="Kepala Keluarga" value={kepalaKeluarga} />
+        </div>
 
-          <InfoItem label="Alamat" value={alamat} />
+        {/* ALAMAT */}
+        <div className="px-5 py-4 sm:px-6">
+          <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+            <MapPin className="size-3.5" />
+            Alamat
+          </div>
 
-          <InfoItem label="RT / RW" value={rtRw} />
+          <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+            <InfoBlock
+              label="Alamat"
+              value={alamat}
+              className="sm:col-span-2 lg:col-span-2"
+            />
 
-          <InfoItem label="Desa / Kelurahan" value={desaKelurahan} />
+            <InfoBlock label="RT / RW" value={rtRw} />
 
-          <InfoItem label="Kecamatan" value={kecamatan} />
+            <InfoBlock label="Desa / Kelurahan" value={desaKelurahan} />
 
-          <InfoItem label="Kabupaten / Kota" value={kabupatenKota} />
+            <InfoBlock label="Kecamatan" value={kecamatan} />
 
-          <InfoItem label="Kode Pos" value={kodePos} />
+            <InfoBlock label="Kabupaten / Kota" value={kabupatenKota} />
 
-          <InfoItem label="Provinsi" value={provinsi} />
+            <InfoBlock label="Provinsi" value={provinsi} />
+
+            <InfoBlock label="Kode Pos" value={kodePos} />
+          </div>
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+function InfoBlock({
+  label,
+  value,
+  className = '',
+}: {
+  label: string
+  value: string | null
+  className?: string
+}) {
+  return (
+    <div className={className}>
+      <div className="text-xs font-medium text-slate-400">{label}</div>
+
+      <div className="mt-1 text-sm font-medium leading-6 text-slate-800">
+        {value || '-'}
+      </div>
+    </div>
   )
 }

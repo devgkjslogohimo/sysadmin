@@ -6,19 +6,16 @@ type Props = {
 
 export function InfoItem({ label, value, mono = false }: Props) {
   return (
-    <div className="min-h-23 border-b border-r border-slate-100 px-5 py-4 sm:px-6">
-      <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-        {label}
-      </div>
+    <div className="min-w-0 px-5 py-4 sm:px-6">
+      <div className="text-xs font-medium text-slate-400">{label}</div>
 
       <div
-        className={
-          mono
-            ? 'font-mono text-sm font-semibold tabular-nums text-slate-900'
-            : 'text-sm font-semibold leading-relaxed text-slate-900'
-        }
+        className={[
+          'mt-1 min-w-0 text-sm font-semibold leading-6 text-slate-900',
+          mono ? 'font-mono tabular-nums' : '',
+        ].join(' ')}
       >
-        {value ?? '-'}
+        {value || '-'}
       </div>
     </div>
   )

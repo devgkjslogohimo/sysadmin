@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2 } from 'lucide-react'
+import { IdCard, Loader2, Pencil, Save, TriangleAlert } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -99,11 +99,20 @@ function toFormValues(data: PrivateKKResponse['kk']): ValidatedKK {
 export function EditKKDialog({ id, open, onOpenChange, onSaved }: Props) {
   const [isLoading, setIsLoading] = useState(false)
 
+  const [loadError, setLoadError] = useState<string | null>(null)
+
   const form = useForm<ValidatedKK>({
     resolver: zodResolver(kkSchema),
 
     defaultValues: createEmptyKK(),
   })
+
+  const {
+    reset,
+    handleSubmit,
+
+    formState: { isSubmitting },
+  } = form
 
   useEffect(() => {
     if (!open) {
@@ -114,6 +123,7 @@ export function EditKKDialog({ id, open, onOpenChange, onSaved }: Props) {
 
     async function loadData() {
       setIsLoading(true)
+      setLoadError(null)
 
       try {
         const response = await getKKPrivateLocal({
@@ -126,14 +136,16 @@ export function EditKKDialog({ id, open, onOpenChange, onSaved }: Props) {
           return
         }
 
-        form.reset(toFormValues(response.kk))
-      } catch (err) {
+        reset(toFormValues(response.kk))
+      } catch (error) {
         if (cancelled) {
           return
         }
 
         const message =
-          err instanceof Error ? err.message : 'Gagal mengambil data.'
+          error instanceof Error ? error.message : 'Gagal mengambil data.'
+
+        setLoadError(message)
 
         toast.error('Gagal membuka data', {
           description: message,
@@ -150,10 +162,10 @@ export function EditKKDialog({ id, open, onOpenChange, onSaved }: Props) {
     return () => {
       cancelled = true
     }
-  }, [open, id, form])
+  }, [open, id, reset])
 
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen && form.formState.isSubmitting) {
+    if (!nextOpen && isSubmitting) {
       return
     }
 
@@ -171,14 +183,18 @@ export function EditKKDialog({ id, open, onOpenChange, onSaved }: Props) {
         },
       })
 
-      toast.success('Data berhasil diperbarui')
+      toast.success('Data berhasil diperbarui', {
+        description: 'Perubahan Kartu Keluarga berhasil disimpan.',
+      })
 
       onOpenChange(false)
 
       await onSaved?.()
-    } catch (err) {
+    } catch (error) {
       const message =
-        err instanceof Error ? err.message : 'Terjadi kesalahan pada server.'
+        error instanceof Error
+          ? error.message
+          : 'Terjadi kesalahan pada server.'
 
       toast.error('Gagal memperbarui data', {
         description: message,
@@ -186,70 +202,136 @@ export function EditKKDialog({ id, open, onOpenChange, onSaved }: Props) {
     }
   }
 
-  const disabled = isLoading || form.formState.isSubmitting
+  const disabled = isLoading || isSubmitting
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         className="
-    flex
-    max-h-[92vh]
-    w-[calc(100vw-2rem)]
-    max-w-[calc(100vw-2rem)]
-    flex-col
-    gap-0
-    overflow-hidden
-    p-0
-    sm:max-w-5xl
-  "
+          flex
+          max-h-[92dvh]
+          w-[calc(100vw-1.5rem)]
+          max-w-[calc(100vw-1.5rem)]
+          flex-col
+          gap-0
+          overflow-hidden
+          rounded-2xl
+          border-slate-200
+          bg-white
+          p-0
+          shadow-xl
+          sm:w-[calc(100vw-3rem)]
+          sm:max-w-5xl
+        "
       >
-        <div className="px-6 pt-6">
-          <DialogHeader>
-            <DialogTitle>Edit Kartu Keluarga</DialogTitle>
+        {/* HEADER */}
+        <DialogHeader className="shrink-0 border-b border-slate-200 bg-white px-5 py-4 pr-12 sm:px-6 sm:py-5">
+          <div className="flex items-start gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <Pencil className="size-4" />
+            </div>
 
-            <DialogDescription>
-              Perbarui informasi Kartu Keluarga dan anggota keluarga.
-            </DialogDescription>
-          </DialogHeader>
-        </div>
+            <div className="min-w-0">
+              <DialogTitle className="text-base font-semibold text-slate-900 sm:text-lg">
+                Edit Kartu Keluarga
+              </DialogTitle>
 
-        {isLoading ? (
-          <div className="flex min-h-87.5 items-center justify-center">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" />
-              Memuat data...
+              <DialogDescription className="mt-1 max-w-2xl text-xs leading-5 text-slate-500 sm:text-sm">
+                Perbarui informasi Kartu Keluarga dan data anggota keluarga.
+              </DialogDescription>
             </div>
           </div>
-        ) : (
-          <form
-            id="create-kk-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="min-w-0"
-          >
-            <div className="px-6 py-6">
-              <KKFormFields form={form} disabled={disabled} />
-            </div>
+        </DialogHeader>
 
-            <DialogFooter className="sticky bottom-0 z-20 border-t bg-background/95 px-6 py-4 backdrop-blur">
+        {isLoading ? (
+          /* LOADING */
+          <div className="flex min-h-0 flex-1 items-center justify-center bg-slate-50/40 px-6 py-16">
+            <div className="text-center">
+              <div className="mx-auto flex size-11 items-center justify-center rounded-xl bg-white text-blue-600 ring-1 ring-slate-200">
+                <Loader2 className="size-5 animate-spin" />
+              </div>
+
+              <div className="mt-3 text-sm font-medium text-slate-700">
+                Memuat data Kartu Keluarga...
+              </div>
+
+              <p className="mt-1 text-xs text-slate-500">
+                Data sensitif sedang dibuka dengan aman.
+              </p>
+            </div>
+          </div>
+        ) : loadError ? (
+          /* ERROR */
+          <div className="flex min-h-0 flex-1 items-center justify-center bg-slate-50/40 px-5 py-12 sm:px-6">
+            <div className="w-full max-w-md rounded-xl border border-red-200 bg-white p-5 text-center">
+              <div className="mx-auto flex size-11 items-center justify-center rounded-xl bg-red-50 text-red-600">
+                <TriangleAlert className="size-5" />
+              </div>
+
+              <div className="mt-3 text-sm font-semibold text-slate-800">
+                Data tidak dapat dibuka
+              </div>
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                {loadError}
+              </p>
+
               <Button
                 type="button"
                 variant="outline"
-                disabled={disabled}
+                className="mt-4 h-9 rounded-lg border-slate-200 bg-white"
                 onClick={() => handleOpenChange(false)}
               >
-                Batal
+                Tutup
               </Button>
+            </div>
+          </div>
+        ) : (
+          /* FORM */
+          <form
+            id="edit-kk-form"
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex min-h-0 flex-1 flex-col"
+          >
+            {/* SCROLL AREA */}
+            <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/40">
+              <div className="p-4 sm:p-6">
+                <KKFormFields form={form} disabled={disabled} />
+              </div>
+            </div>
 
-              <Button type="submit" disabled={disabled}>
-                {form.formState.isSubmitting ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Menyimpan...
-                  </>
-                ) : (
-                  'Simpan Perubahan'
-                )}
-              </Button>
+            {/* FOOTER */}
+            <DialogFooter className="shrink-0 border-t border-slate-200 bg-white px-4 pt-4 pb-5 sm:px-6 sm:pt-4 sm:pb-6">
+              <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10 rounded-lg border-slate-200 bg-white px-5 shadow-none"
+                  disabled={disabled}
+                  onClick={() => handleOpenChange(false)}
+                >
+                  Batal
+                </Button>
+
+                <Button
+                  type="submit"
+                  form="edit-kk-form"
+                  className="h-10 rounded-lg px-5 sm:min-w-44"
+                  disabled={disabled}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Menyimpan...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="size-4" />
+                      Simpan Perubahan
+                    </>
+                  )}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
         )}

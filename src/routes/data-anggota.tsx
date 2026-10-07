@@ -1,86 +1,54 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import {
+  ContactRound,
+  Database,
+  FileJson2,
+  Files,
+  LayoutList,
+  UserRound,
+} from 'lucide-react'
 
-import type { SortingState } from '@tanstack/react-table'
+import { anggotaColumns } from '@/components/anggota/list/anggota-columns'
+import {
+  anggotaColumnLabels,
+  anggotaSearchOptions,
+} from '@/components/anggota/list/config'
 
-import { useCallback } from 'react'
+import { DataCountBadge } from '@/components/data-list/data-count-badge'
+import { DataListCard } from '@/components/data-list/data-list-card'
+import { DataListEmpty } from '@/components/data-list/data-list-empty'
+import { DataListHero } from '@/components/data-list/data-list-hero'
+import { DataListLoading } from '@/components/data-list/data-list-loading'
+import { DataListPage } from '@/components/data-list/data-list-page'
+import { DataListStats } from '@/components/data-list/data-list-stats'
 
-import { AnggotaListHeader } from '@/components/anggota/list/anggota-list-header'
+import { DataTable } from '@/components/data-table/data-table'
+import { Button } from '@/components/ui/button'
 
-import { AnggotaListTable } from '@/components/anggota/list/anggota-list-table'
+import { useListController } from '@/hooks/use-list-controller'
 
-import { KKListLoading } from '@/components/kk/list/kk-list-loading'
+import { createListSearchValidator } from '@/lib/list-search'
 
-import { KKListPagination } from '@/components/kk/list/kk-list-pagination'
+import type { ListSearch } from '@/lib/list-search'
 
 import { listAnggota } from '@/server/anggota'
 
-type PageSize = 10 | 20 | 50 | 100
+const searchBy = ['all', 'nama', 'nik', 'alamat'] as const
 
-type SearchBy = 'all' | 'nama' | 'nik' | 'alamat'
+const sortBy = ['nama', 'kepalaKeluarga', 'alamat', 'createdAt'] as const
 
-type SortBy = 'nama' | 'kepalaKeluarga' | 'alamat' | 'createdAt'
+type SearchBy = (typeof searchBy)[number]
 
-type SortOrder = 'asc' | 'desc'
+type SortBy = (typeof sortBy)[number]
 
-type DataAnggotaSearch = {
-  page?: number
-  limit?: PageSize
+type DataAnggotaSearch = ListSearch<SearchBy, SortBy>
 
-  q?: string
-  by?: SearchBy
+const allowedSorts = new Set<string>(sortBy)
 
-  sort?: SortBy
-  order?: SortOrder
-}
-
-const allowedPageSizes = new Set<number>([10, 20, 50, 100])
-
-const allowedSearchBy = new Set<string>(['all', 'nama', 'nik', 'alamat'])
-
-const allowedSorts = new Set<string>([
-  'nama',
-  'kepalaKeluarga',
-  'alamat',
-  'createdAt',
-])
-
-function validateSearch(search: Record<string, unknown>): DataAnggotaSearch {
-  const result: DataAnggotaSearch = {}
-
-  const page = Number(search.page)
-
-  if (Number.isInteger(page) && page > 1) {
-    result.page = page
-  }
-
-  const limit = Number(search.limit)
-
-  if (allowedPageSizes.has(limit)) {
-    result.limit = limit as PageSize
-  }
-
-  if (typeof search.q === 'string') {
-    const q = search.q.trim()
-
-    if (q) {
-      result.q = q
-    }
-  }
-
-  if (typeof search.by === 'string' && allowedSearchBy.has(search.by)) {
-    result.by = search.by as SearchBy
-  }
-
-  if (typeof search.sort === 'string' && allowedSorts.has(search.sort)) {
-    result.sort = search.sort as SortBy
-  }
-
-  if (search.order === 'asc' || search.order === 'desc') {
-    result.order = search.order
-  }
-
-  return result
-}
+const validateSearch = createListSearchValidator({
+  searchBy,
+  sortBy,
+})
 
 export const Route = createFileRoute('/data-anggota')({
   validateSearch,
@@ -99,7 +67,7 @@ export const Route = createFileRoute('/data-anggota')({
     sortOrder: search.order ?? 'asc',
   }),
 
-  loader: async ({ deps }) =>
+  loader: ({ deps }) =>
     listAnggota({
       data: {
         page: deps.page,
@@ -128,128 +96,139 @@ function DataAnggotaPage() {
 
   const navigate = Route.useNavigate()
 
-  const sorting: SortingState = [
-    {
-      id: search.sort ?? 'nama',
+  const list = useListController<DataAnggotaSearch>({
+    search,
 
-      desc: (search.order ?? 'asc') === 'desc',
-    },
-  ]
+    defaultSort: 'nama',
 
-  const handleSearchChange = useCallback(
-    (value: string) => {
-      void navigate({
-        search: (previous) => ({
-          ...previous,
+    defaultOrder: 'asc',
 
-          page: undefined,
+    allowedSorts,
 
-          q: value.trim() || undefined,
-        }),
-      })
-    },
-    [navigate],
-  )
+    navigate,
+  })
 
-  function handleSearchByChange(by: SearchBy) {
-    void navigate({
-      search: (previous) => ({
-        ...previous,
+  const hasData = result.data.length > 0
 
-        page: undefined,
-
-        by: by === 'all' ? undefined : by,
-      }),
-    })
-  }
-
-  const handleSortingChange = useCallback(
-    (updater: SortingState | ((old: SortingState) => SortingState)) => {
-      const next = typeof updater === 'function' ? updater(sorting) : updater
-
-      if (next.length === 0) {
-        return
-      }
-
-      const first = next[0]
-
-      if (!allowedSorts.has(first.id)) {
-        return
-      }
-      void navigate({
-        search: (previous) => ({
-          ...previous,
-
-          page: undefined,
-
-          sort: first.id as SortBy,
-
-          order: first.desc ? 'desc' : 'asc',
-        }),
-      })
-    },
-    [navigate, sorting],
-  )
-
-  function handlePageChange(page: number) {
-    void navigate({
-      search: (previous) => ({
-        ...previous,
-
-        page: page <= 1 ? undefined : page,
-      }),
-    })
-  }
-
-  function handlePageSizeChange(limit: PageSize) {
-    void navigate({
-      search: (previous) => ({
-        ...previous,
-
-        page: undefined,
-
-        limit: limit === 20 ? undefined : limit,
-      }),
-    })
-  }
+  const isEmpty = !hasData && !search.q
 
   return (
-    <main className="min-h-screen bg-slate-50/80">
-      <div className="mx-auto w-full max-w-375 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <AnggotaListHeader total={result.pagination.total} />
+    <DataListPage>
+      <DataListHero
+        icon={<ContactRound className="size-5" />}
+        eyebrow="Database Jemaat"
+        title="Data Anggota"
+        description="Lihat dan kelola seluruh anggota jemaat beserta identitas, keluarga, alamat, dan informasi terkait."
+        badge={
+          <DataCountBadge>
+            {result.pagination.total > 0
+              ? `${result.pagination.total.toLocaleString(
+                  'id-ID',
+                )} anggota tersimpan`
+              : 'Belum ada anggota tersimpan'}
+          </DataCountBadge>
+        }
+        actions={
+          <>
+            <Button
+              variant="outline"
+              className="h-10 w-full rounded-lg border-slate-200 bg-white px-4 text-slate-700 shadow-sm hover:bg-slate-50 sm:w-auto"
+              asChild
+            >
+              <Link to="/data-kk">
+                <Database className="size-4 text-blue-600" />
+                Data KK
+              </Link>
+            </Button>
 
-        <AnggotaListTable
-          items={result.data}
-          searchValue={search.q ?? ''}
-          searchBy={search.by ?? 'all'}
-          sorting={sorting}
-          onSearchChange={handleSearchChange}
-          onSearchByChange={handleSearchByChange}
-          onSortingChange={handleSortingChange}
+            <Button
+              className="h-10 w-full rounded-lg px-4 shadow-sm sm:w-auto"
+              asChild
+            >
+              <Link to="/fitur/parser-kk">
+                <FileJson2 className="size-4" />
+                Tambah Data
+              </Link>
+            </Button>
+          </>
+        }
+      />
+
+      {hasData && (
+        <DataListStats
+          items={[
+            {
+              label: 'Total Anggota',
+
+              value: result.pagination.total.toLocaleString('id-ID'),
+
+              icon: <UserRound className="size-4" />,
+            },
+
+            {
+              label: 'Ditampilkan',
+
+              value: result.data.length.toLocaleString('id-ID'),
+
+              icon: <LayoutList className="size-4" />,
+            },
+
+            {
+              label: 'Halaman',
+
+              value: `${result.pagination.page} / ${Math.max(
+                result.pagination.totalPages,
+                1,
+              )}`,
+
+              icon: <Files className="size-4" />,
+            },
+          ]}
         />
+      )}
 
-        <KKListPagination
+      {isEmpty ? (
+        <DataListEmpty
+          icon={<ContactRound className="size-7" />}
+          title="Belum ada data anggota"
+          description="Data anggota akan tersedia setelah Kartu Keluarga ditambahkan ke database."
+          action={
+            <Button asChild>
+              <Link to="/fitur/parser-kk">
+                <FileJson2 className="size-4" />
+                Tambah Data KK
+              </Link>
+            </Button>
+          }
+        />
+      ) : (
+        <DataListCard
           pagination={result.pagination}
-          onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}
-        />
-      </div>
-    </main>
+          onPageChange={list.pageChange}
+          onPageSizeChange={list.pageSizeChange}
+        >
+          <DataTable
+            columns={anggotaColumns}
+            data={result.data}
+            searchValue={search.q ?? ''}
+            searchMode={search.by ?? 'all'}
+            searchOptions={anggotaSearchOptions}
+            columnLabels={anggotaColumnLabels}
+            sorting={list.sorting}
+            onSearchChange={list.searchChange}
+            onSearchModeChange={list.searchByChange}
+            onSortingChange={list.sortingChange}
+          />
+        </DataListCard>
+      )}
+    </DataListPage>
   )
 }
 
 function DataAnggotaPending() {
   return (
-    <main className="min-h-screen bg-slate-50/80">
-      <div className="mx-auto w-full max-w-375 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <div className="mb-6">
-          <div className="mb-2 h-9 w-80 rounded bg-slate-200" />
-
-          <div className="h-4 w-64 rounded bg-slate-100" />
-        </div>
-
-        <KKListLoading />
-      </div>
-    </main>
+    <DataListPage>
+      <DataListLoading />
+    </DataListPage>
   )
 }

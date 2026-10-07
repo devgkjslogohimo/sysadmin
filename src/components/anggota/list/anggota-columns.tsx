@@ -2,7 +2,13 @@ import { Link } from '@tanstack/react-router'
 
 import type { ColumnDef } from '@tanstack/react-table'
 
-import { ChevronRight, MapPin, MoreHorizontal, Users } from 'lucide-react'
+import {
+  ChevronRight,
+  HeartPulse,
+  MapPin,
+  MoreHorizontal,
+  Users,
+} from 'lucide-react'
 
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 
@@ -30,7 +36,7 @@ export const anggotaColumns: ColumnDef<AnggotaListItem>[] = [
     ),
 
     cell: ({ row }) => (
-      <div className="min-w-[190px]">
+      <div className="min-w-47.5">
         <div className="font-semibold text-slate-900">{row.original.nama}</div>
 
         <div className="mt-1 text-xs text-muted-foreground">
@@ -79,7 +85,7 @@ export const anggotaColumns: ColumnDef<AnggotaListItem>[] = [
     header: 'Tempat / Tgl. Lahir',
 
     cell: ({ row }) => (
-      <div className="min-w-[160px]">
+      <div className="min-w-40">
         <div>{row.original.tempatLahir ?? '-'}</div>
 
         <div className="mt-1 text-xs text-muted-foreground">
@@ -99,7 +105,7 @@ export const anggotaColumns: ColumnDef<AnggotaListItem>[] = [
     ),
 
     cell: ({ row }) => (
-      <div className="min-w-[180px]">
+      <div className="min-w-45">
         <div className="flex items-center gap-2">
           <Users className="size-4 text-muted-foreground" />
 
@@ -127,7 +133,7 @@ export const anggotaColumns: ColumnDef<AnggotaListItem>[] = [
     ),
 
     cell: ({ row }) => (
-      <div className="flex min-w-[230px] items-start gap-2">
+      <div className="flex min-w-57.5 items-start gap-2">
         <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
 
         <div>
@@ -147,7 +153,6 @@ export const anggotaColumns: ColumnDef<AnggotaListItem>[] = [
     id: 'actions',
 
     enableSorting: false,
-
     enableHiding: false,
 
     cell: ({ row }) => (
@@ -165,6 +170,18 @@ export const anggotaColumns: ColumnDef<AnggotaListItem>[] = [
             <DropdownMenuLabel>Aksi</DropdownMenuLabel>
 
             <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <Link
+                to="/data-anggota/$id"
+                params={{
+                  id: String(row.original.id),
+                }}
+              >
+                <HeartPulse className="size-4" />
+                Detail & Riwayat Kesehatan
+              </Link>
+            </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
               <Link

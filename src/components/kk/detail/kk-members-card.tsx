@@ -13,7 +13,9 @@ import {
 
 import { GenderBadge } from './gender-badge'
 import { KKMemberMobile } from './kk-member-mobile'
+
 import type { KKMemberView } from './types'
+import { Link } from '@tanstack/react-router'
 
 type Props = {
   members: KKMemberView[]
@@ -24,45 +26,69 @@ type Props = {
 
 export function KKMembersCard({ members, sensitiveVisible, getNik }: Props) {
   return (
-    <Card className="overflow-hidden border-slate-200 shadow-sm">
-      <CardHeader className="border-b bg-white px-5 py-4 sm:px-6">
+    <Card className="overflow-hidden rounded-2xl border-slate-200 bg-white shadow-sm">
+      <CardHeader className="border-b border-slate-200 px-5 py-4 sm:px-6">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-slate-100">
-              <Users className="size-4 text-slate-600" />
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <Users className="size-4" />
             </div>
 
-            <div>
-              <CardTitle className="text-base">Anggota Keluarga</CardTitle>
+            <div className="min-w-0">
+              <CardTitle className="text-base font-semibold text-slate-900">
+                Anggota Keluarga
+              </CardTitle>
 
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Daftar anggota yang terdaftar pada KK ini
+              <p className="mt-0.5 text-xs leading-5 text-slate-500">
+                Daftar anggota yang terdaftar pada Kartu Keluarga ini
               </p>
             </div>
           </div>
 
-          <Badge variant="secondary" className="rounded-full px-3">
-            {members.length} orang
+          <Badge
+            variant="secondary"
+            className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600"
+          >
+            {members.length.toLocaleString('id-ID')} orang
           </Badge>
         </div>
       </CardHeader>
 
       <CardContent className="p-0">
-        <DesktopMembersTable
-          members={members}
-          sensitiveVisible={sensitiveVisible}
-          getNik={getNik}
-        />
+        {members.length === 0 ? (
+          <div className="px-6 py-12 text-center">
+            <div className="mx-auto flex size-11 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
+              <Users className="size-4" />
+            </div>
 
-        <div className="divide-y md:hidden">
-          {members.map((member) => (
-            <KKMemberMobile
-              key={member.id}
-              member={member}
-              nik={getNik(member.no, member.nik)}
+            <div className="mt-3 text-sm font-semibold text-slate-700">
+              Belum ada anggota keluarga
+            </div>
+
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              Data anggota keluarga belum tersedia pada Kartu Keluarga ini.
+            </p>
+          </div>
+        ) : (
+          <>
+            <DesktopMembersTable
+              members={members}
+              sensitiveVisible={sensitiveVisible}
+              getNik={getNik}
             />
-          ))}
-        </div>
+
+            <div className="divide-y divide-slate-100 md:hidden">
+              {members.map((member) => (
+                <KKMemberMobile
+                  key={member.id}
+                  member={member}
+                  nik={getNik(member.no, member.nik)}
+                  sensitiveVisible={sensitiveVisible}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   )
@@ -73,49 +99,78 @@ function DesktopMembersTable({ members, sensitiveVisible, getNik }: Props) {
     <div className="hidden overflow-x-auto md:block">
       <Table>
         <TableHeader>
-          <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
-            <TableHead className="w-14 pl-6">No</TableHead>
+          <TableRow className="border-slate-200 bg-slate-50/70 hover:bg-slate-50/70">
+            <TableHead className="w-16 pl-6 text-xs font-semibold text-slate-500">
+              No
+            </TableHead>
 
-            <TableHead className="min-w-[210px]">Nama Lengkap</TableHead>
+            <TableHead className="min-w-52.5 text-xs font-semibold text-slate-500">
+              Nama Lengkap
+            </TableHead>
 
-            <TableHead className="min-w-[180px]">NIK</TableHead>
+            <TableHead className="min-w-45 text-xs font-semibold text-slate-500">
+              NIK
+            </TableHead>
 
-            <TableHead className="min-w-[130px]">Jenis Kelamin</TableHead>
+            <TableHead className="min-w-32.5 text-xs font-semibold text-slate-500">
+              Jenis Kelamin
+            </TableHead>
 
-            <TableHead className="min-w-[180px]">Tempat / Tgl. Lahir</TableHead>
+            <TableHead className="min-w-47.5 text-xs font-semibold text-slate-500">
+              Tempat / Tgl. Lahir
+            </TableHead>
 
-            <TableHead>Agama</TableHead>
+            <TableHead className="min-w-27.5 text-xs font-semibold text-slate-500">
+              Agama
+            </TableHead>
 
-            <TableHead className="min-w-[210px]">Pendidikan</TableHead>
+            <TableHead className="min-w-52.5 text-xs font-semibold text-slate-500">
+              Pendidikan
+            </TableHead>
 
-            <TableHead className="min-w-[180px]">Pekerjaan</TableHead>
+            <TableHead className="min-w-45 text-xs font-semibold text-slate-500">
+              Pekerjaan
+            </TableHead>
 
-            <TableHead className="min-w-[110px] pr-6">Gol. Darah</TableHead>
+            <TableHead className="min-w-27.5 pr-6 text-xs font-semibold text-slate-500">
+              Gol. Darah
+            </TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
           {members.map((member) => (
-            <TableRow key={member.id}>
-              <TableCell className="pl-6 text-muted-foreground">
-                <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold">
+            <TableRow
+              key={member.id}
+              className="border-slate-100 transition-colors hover:bg-slate-50/60"
+            >
+              <TableCell className="pl-6">
+                <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold tabular-nums text-slate-500">
                   {member.no}
                 </div>
               </TableCell>
 
               <TableCell>
-                <div className="font-semibold text-slate-900">
+                <Link
+                  to="/data-anggota/$id"
+                  params={{
+                    id: String(member.id),
+                  }}
+                  preload="intent"
+                  className="font-semibold text-slate-900 transition-colors hover:text-blue-600 hover:underline hover:underline-offset-4"
+                >
                   {member.nama}
-                </div>
+                </Link>
               </TableCell>
 
               <TableCell>
                 <code
-                  className={
+                  className={[
+                    'inline-flex rounded-md px-2 py-1 font-mono text-xs font-medium tabular-nums',
                     sensitiveVisible
-                      ? 'rounded-md bg-amber-50 px-2 py-1 font-mono text-xs text-amber-900'
-                      : 'rounded-md bg-slate-100 px-2 py-1 font-mono text-xs text-slate-700'
-                  }
+                      ? 'bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200'
+                      : 'bg-slate-100 text-slate-600',
+                  ].join(' ')}
                 >
                   {getNik(member.no, member.nik)}
                 </code>
@@ -126,24 +181,30 @@ function DesktopMembersTable({ members, sensitiveVisible, getNik }: Props) {
               </TableCell>
 
               <TableCell>
-                <div className="font-medium">{member.tempatLahir ?? '-'}</div>
+                <div className="text-sm font-medium text-slate-700">
+                  {member.tempatLahir ?? '-'}
+                </div>
 
-                <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                  <CalendarDays className="size-3.5" />
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <CalendarDays className="size-3.5 shrink-0" />
 
                   {member.tanggalLahir ?? '-'}
                 </div>
               </TableCell>
 
-              <TableCell>{member.agama ?? '-'}</TableCell>
+              <TableCell className="text-sm text-slate-700">
+                {member.agama ?? '-'}
+              </TableCell>
 
-              <TableCell className="max-w-[260px]">
+              <TableCell className="max-w-65 text-sm text-slate-700">
                 {member.pendidikan ?? '-'}
               </TableCell>
 
-              <TableCell>{member.pekerjaan ?? '-'}</TableCell>
+              <TableCell className="text-sm text-slate-700">
+                {member.pekerjaan ?? '-'}
+              </TableCell>
 
-              <TableCell className="pr-6">
+              <TableCell className="pr-6 text-sm font-medium text-slate-700">
                 {member.golonganDarah ?? '-'}
               </TableCell>
             </TableRow>

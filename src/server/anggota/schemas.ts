@@ -2,6 +2,10 @@ import { z } from 'zod'
 
 export const anggotaSearchBySchema = z.enum(['all', 'nama', 'nik', 'alamat'])
 
+export const anggotaIdSchema = z.object({
+  id: z.number().int().positive(),
+})
+
 export const listAnggotaSchema = z.object({
   page: z.number().int().positive().default(1),
 

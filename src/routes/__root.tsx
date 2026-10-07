@@ -1,9 +1,13 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
+import { SiteFooter } from '@/components/layout/site-footer'
+import { SiteNavbar } from '@/components/layout/site-navbar'
+import { Toaster } from '@/components/ui/sonner'
+
 import appCss from '../styles.css?url'
-import { Toaster } from '#/components/ui/sonner'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -16,9 +20,14 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Sistem Data Jemaat | GKJ Slogohimo',
+      },
+      {
+        name: 'description',
+        content: 'Sistem pengelolaan data jemaat GKJ Slogohimo',
       },
     ],
+
     links: [
       {
         rel: 'stylesheet',
@@ -26,18 +35,28 @@ export const Route = createRootRoute({
       },
     ],
   }),
+
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <head>
         <HeadContent />
       </head>
+
       <body>
-        {children}
+        <div className="flex min-h-dvh flex-col bg-blue-50/30">
+          <SiteNavbar />
+
+          <div className="flex-1">{children}</div>
+
+          <SiteFooter />
+        </div>
+
         <Toaster richColors position="top-right" />
+
         <TanStackDevtools
           config={{
             position: 'bottom-right',
@@ -49,6 +68,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             },
           ]}
         />
+
         <Scripts />
       </body>
     </html>

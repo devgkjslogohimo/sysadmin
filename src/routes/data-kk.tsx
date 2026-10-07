@@ -1,87 +1,56 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import {
+  Database,
+  FileJson2,
+  Files,
+  LayoutList,
+  Users,
+  UsersRound,
+} from 'lucide-react'
 
-import type { SortingState } from '@tanstack/react-table'
+import { DataCountBadge } from '@/components/data-list/data-count-badge'
+import { DataListCard } from '@/components/data-list/data-list-card'
+import { DataListEmpty } from '@/components/data-list/data-list-empty'
+import { DataListHero } from '@/components/data-list/data-list-hero'
+import { DataListLoading } from '@/components/data-list/data-list-loading'
+import { DataListPage } from '@/components/data-list/data-list-page'
+import { DataListStats } from '@/components/data-list/data-list-stats'
 
-import { useCallback } from 'react'
+import { DataTable } from '@/components/data-table/data-table'
+import { Button } from '@/components/ui/button'
 
-import { KKListEmpty } from '@/components/kk/list/kk-list-empty'
-import { KKListHeader } from '@/components/kk/list/kk-list-header'
-import { KKListLoading } from '@/components/kk/list/kk-list-loading'
-import { KKListPagination } from '@/components/kk/list/kk-list-pagination'
-import { KKListTable } from '@/components/kk/list/kk-list-table'
+import { kkColumns } from '@/components/kk/list/kk-columns'
+import { kkColumnLabels, kkSearchOptions } from '@/components/kk/list/config'
+
+import { useListController } from '@/hooks/use-list-controller'
+
+import { createListSearchValidator } from '@/lib/list-search'
+
+import type { ListSearch } from '@/lib/list-search'
 
 import { listKK } from '@/server/kk.functions'
 
-type PageSize = 10 | 20 | 50 | 100
+const searchBy = ['all', 'nama', 'nik', 'alamat'] as const
 
-type SortBy = 'kepalaKeluarga' | 'alamat' | 'jumlahAnggota' | 'createdAt'
-
-type SortOrder = 'asc' | 'desc'
-
-type SearchBy = 'all' | 'nama' | 'nik' | 'alamat'
-
-type DataKKSearch = {
-  page?: number
-
-  limit?: PageSize
-
-  q?: string
-
-  by?: SearchBy
-
-  sort?: SortBy
-
-  order?: SortOrder
-}
-
-const allowedPageSizes = new Set<number>([10, 20, 50, 100])
-
-const allowedSorts = new Set<string>([
+const sortBy = [
   'kepalaKeluarga',
   'alamat',
   'jumlahAnggota',
   'createdAt',
-])
+] as const
 
-const allowedSearchBy = new Set<string>(['all', 'nama', 'nik', 'alamat'])
+type SearchBy = (typeof searchBy)[number]
 
-function validateSearch(search: Record<string, unknown>): DataKKSearch {
-  const result: DataKKSearch = {}
+type SortBy = (typeof sortBy)[number]
 
-  const page = Number(search.page)
+type DataKKSearch = ListSearch<SearchBy, SortBy>
 
-  if (typeof search.by === 'string' && allowedSearchBy.has(search.by)) {
-    result.by = search.by as SearchBy
-  }
+const allowedSorts = new Set<string>(sortBy)
 
-  if (Number.isInteger(page) && page > 1) {
-    result.page = page
-  }
-
-  const limit = Number(search.limit)
-
-  if (allowedPageSizes.has(limit)) {
-    result.limit = limit as PageSize
-  }
-
-  if (typeof search.q === 'string') {
-    const q = search.q.trim()
-
-    if (q) {
-      result.q = q
-    }
-  }
-
-  if (typeof search.sort === 'string' && allowedSorts.has(search.sort)) {
-    result.sort = search.sort as SortBy
-  }
-
-  if (search.order === 'asc' || search.order === 'desc') {
-    result.order = search.order
-  }
-
-  return result
-}
+const validateSearch = createListSearchValidator({
+  searchBy,
+  sortBy,
+})
 
 export const Route = createFileRoute('/data-kk')({
   validateSearch,
@@ -93,15 +62,15 @@ export const Route = createFileRoute('/data-kk')({
 
     q: search.q ?? '',
 
-    sortBy: search.sort ?? 'createdAt',
-
     searchBy: search.by ?? 'all',
+
+    sortBy: search.sort ?? 'createdAt',
 
     sortOrder: search.order ?? 'desc',
   }),
 
-  loader: async ({ deps }) => {
-    return listKK({
+  loader: ({ deps }) =>
+    listKK({
       data: {
         page: deps.page,
 
@@ -115,8 +84,7 @@ export const Route = createFileRoute('/data-kk')({
 
         sortOrder: deps.sortOrder,
       },
-    })
-  },
+    }),
 
   pendingComponent: DataKKPending,
 
@@ -130,151 +98,139 @@ function DataKKPage() {
 
   const navigate = Route.useNavigate()
 
-  const sorting: SortingState = [
-    {
-      id: search.sort ?? 'createdAt',
+  const list = useListController<DataKKSearch>({
+    search,
 
-      desc: (search.order ?? 'desc') === 'desc',
-    },
-  ]
+    defaultSort: 'createdAt',
 
-  const handleSearchChange = useCallback(
-    (value: string) => {
-      void navigate({
-        search: (previous) => ({
-          ...previous,
+    defaultOrder: 'desc',
 
-          page: undefined,
+    allowedSorts,
 
-          q: value.trim() || undefined,
-        }),
-      })
-    },
-    [navigate],
-  )
+    navigate,
+  })
 
-  function handleSearchByChange(by: SearchBy) {
-    void navigate({
-      search: (previous) => ({
-        ...previous,
+  const hasData = result.data.length > 0
 
-        page: undefined,
-
-        by: by === 'all' ? undefined : by,
-      }),
-    })
-  }
-
-  const handleSortingChange = useCallback(
-    (updater: SortingState | ((old: SortingState) => SortingState)) => {
-      const next = typeof updater === 'function' ? updater(sorting) : updater
-
-      if (next.length === 0) {
-        return
-      }
-
-      const first = next[0]
-
-      if (!allowedSorts.has(first.id)) {
-        return
-      }
-
-      void navigate({
-        search: (previous) => ({
-          ...previous,
-
-          page: undefined,
-
-          sort: first.id as SortBy,
-
-          order: first.desc ? 'desc' : 'asc',
-        }),
-      })
-    },
-    [navigate, sorting],
-  )
-
-  function handlePageChange(page: number) {
-    void navigate({
-      search: (previous) => ({
-        ...previous,
-
-        page: page <= 1 ? undefined : page,
-      }),
-    })
-  }
-
-  function handlePageSizeChange(limit: PageSize) {
-    void navigate({
-      search: (previous) => ({
-        ...previous,
-
-        page: undefined,
-
-        limit: limit === 20 ? undefined : limit,
-      }),
-    })
-  }
+  const isEmpty = !hasData && !search.q
 
   return (
-    <main className="min-h-screen bg-slate-50/80">
-      <PageContainer>
-        <KKListHeader total={result.pagination.total} />
-
-        {result.data.length === 0 && !search.q ? (
-          <KKListEmpty />
-        ) : (
+    <DataListPage>
+      <DataListHero
+        icon={<Database className="size-5" />}
+        eyebrow="Database Jemaat"
+        title="Data Kartu Keluarga"
+        description="Kelola data Kartu Keluarga, anggota keluarga, alamat, dan informasi jemaat dalam satu database."
+        badge={
+          <DataCountBadge>
+            {result.pagination.total > 0
+              ? `${result.pagination.total.toLocaleString(
+                  'id-ID',
+                )} Kartu Keluarga tersimpan`
+              : 'Belum ada data tersimpan'}
+          </DataCountBadge>
+        }
+        actions={
           <>
-            <KKListTable
-              items={result.data}
-              searchValue={search.q ?? ''}
-              searchBy={search.by ?? 'all'}
-              sorting={sorting}
-              onSearchChange={handleSearchChange}
-              onSearchByChange={handleSearchByChange}
-              onSortingChange={handleSortingChange}
-            />
+            <Button
+              variant="outline"
+              className="h-10 w-full rounded-lg border-slate-200 bg-white px-4 text-slate-700 shadow-sm hover:bg-slate-50 sm:w-auto"
+              asChild
+            >
+              <Link to="/data-anggota">
+                <UsersRound className="size-4 text-blue-600" />
+                Data Anggota
+              </Link>
+            </Button>
 
-            <KKListPagination
-              pagination={result.pagination}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-            />
+            <Button
+              className="h-10 w-full rounded-lg px-4 shadow-sm sm:w-auto"
+              asChild
+            >
+              <Link to="/fitur/parser-kk">
+                <FileJson2 className="size-4" />
+                Tambah Data
+              </Link>
+            </Button>
           </>
-        )}
-      </PageContainer>
-    </main>
+        }
+      />
+
+      {hasData && (
+        <DataListStats
+          items={[
+            {
+              label: 'Total KK',
+
+              value: result.pagination.total.toLocaleString('id-ID'),
+
+              icon: <Database className="size-4" />,
+            },
+
+            {
+              label: 'Ditampilkan',
+
+              value: result.data.length.toLocaleString('id-ID'),
+
+              icon: <LayoutList className="size-4" />,
+            },
+
+            {
+              label: 'Halaman',
+
+              value: `${result.pagination.page} / ${Math.max(
+                result.pagination.totalPages,
+                1,
+              )}`,
+
+              icon: <Files className="size-4" />,
+            },
+          ]}
+        />
+      )}
+
+      {isEmpty ? (
+        <DataListEmpty
+          icon={<Users className="size-7" />}
+          title="Belum ada data Kartu Keluarga"
+          description="Tambahkan data Kartu Keluarga melalui Parser KK untuk mulai membangun database jemaat."
+          action={
+            <Button asChild>
+              <Link to="/fitur/parser-kk">
+                <FileJson2 className="size-4" />
+                Tambah Data KK
+              </Link>
+            </Button>
+          }
+        />
+      ) : (
+        <DataListCard
+          pagination={result.pagination}
+          onPageChange={list.pageChange}
+          onPageSizeChange={list.pageSizeChange}
+        >
+          <DataTable
+            columns={kkColumns}
+            data={result.data}
+            searchValue={search.q ?? ''}
+            searchMode={search.by ?? 'all'}
+            searchOptions={kkSearchOptions}
+            columnLabels={kkColumnLabels}
+            sorting={list.sorting}
+            onSearchChange={list.searchChange}
+            onSearchModeChange={list.searchByChange}
+            onSortingChange={list.sortingChange}
+          />
+        </DataListCard>
+      )}
+    </DataListPage>
   )
 }
 
 function DataKKPending() {
   return (
-    <main className="min-h-screen bg-slate-50/80">
-      <PageContainer>
-        <HeaderSkeleton />
-
-        <KKListLoading />
-      </PageContainer>
-    </main>
-  )
-}
-
-function PageContainer({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mx-auto w-full max-w-350 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      {children}
-    </div>
-  )
-}
-
-function HeaderSkeleton() {
-  return (
-    <div className="mb-6">
-      <div className="mb-3 h-3 w-20 rounded bg-slate-200" />
-
-      <div className="mb-2 h-9 w-72 rounded bg-slate-200" />
-
-      <div className="h-4 w-80 max-w-full rounded bg-slate-100" />
-    </div>
+    <DataListPage>
+      <DataListLoading />
+    </DataListPage>
   )
 }

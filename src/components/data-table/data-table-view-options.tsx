@@ -1,7 +1,9 @@
 import type { Table as TanStackTable } from '@tanstack/react-table'
-import { SlidersHorizontal } from 'lucide-react'
+
+import { Columns3 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13,9 +15,14 @@ import {
 
 type Props<TData> = {
   table: TanStackTable<TData>
+
+  columnLabels?: Partial<Record<string, string>>
 }
 
-export function DataTableViewOptions<TData>({ table }: Props<TData>) {
+export function DataTableViewOptions<TData>({
+  table,
+  columnLabels = {},
+}: Props<TData>) {
   const columns = table
     .getAllColumns()
     .filter(
@@ -23,16 +30,33 @@ export function DataTableViewOptions<TData>({ table }: Props<TData>) {
         typeof column.accessorFn !== 'undefined' && column.getCanHide(),
     )
 
+  if (columns.length === 0) {
+    return null
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto">
-          <SlidersHorizontal className="size-4" />
+        <Button
+          variant="outline"
+          className="
+    h-10
+    w-full
+    rounded-lg
+    border-slate-200
+    bg-white
+    px-3
+    text-slate-600
+    shadow-none
+    sm:w-auto
+  "
+        >
+          <Columns3 className="size-4" />
           Kolom
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>Tampilkan kolom</DropdownMenuLabel>
 
         <DropdownMenuSeparator />
@@ -43,26 +67,10 @@ export function DataTableViewOptions<TData>({ table }: Props<TData>) {
             checked={column.getIsVisible()}
             onCheckedChange={(value) => column.toggleVisibility(Boolean(value))}
           >
-            {getColumnLabel(column.id)}
+            {columnLabels[column.id] ?? column.id}
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
-
-function getColumnLabel(id: string) {
-  const labels: Record<string, string> = {
-    kepalaKeluarga: 'Kepala Keluarga',
-
-    alamat: 'Alamat',
-
-    wilayah: 'Wilayah',
-
-    jumlahAnggota: 'Anggota',
-
-    createdAt: 'Tanggal Dibuat',
-  }
-
-  return labels[id] ?? id
 }

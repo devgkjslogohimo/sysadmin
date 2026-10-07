@@ -1,7 +1,7 @@
 import type { Column } from '@tanstack/react-table'
+
 import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
 
 type Props<TData, TValue> = {
   column: Column<TData, TValue>
+
   title: string
 }
 
@@ -20,7 +21,7 @@ export function DataTableColumnHeader<TData, TValue>({
   title,
 }: Props<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <span className="font-medium">{title}</span>
+    return <span className="font-semibold">{title}</span>
   }
 
   const sorted = column.getIsSorted()
@@ -28,21 +29,20 @@ export function DataTableColumnHeader<TData, TValue>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="-ml-3 h-8 data-[state=open]:bg-accent"
+        <button
+          type="button"
+          className="-ml-1 inline-flex h-8 items-center gap-1 rounded-md px-1 text-xs font-semibold text-slate-600 transition hover:text-slate-900"
         >
-          <span>{title}</span>
+          {title}
 
           {sorted === 'desc' ? (
-            <ArrowDown className="ml-1 size-3.5" />
+            <ArrowDown className="size-3.5 text-blue-600" />
           ) : sorted === 'asc' ? (
-            <ArrowUp className="ml-1 size-3.5" />
+            <ArrowUp className="size-3.5 text-blue-600" />
           ) : (
-            <ChevronsUpDown className="ml-1 size-3.5" />
+            <ChevronsUpDown className="size-3.5 text-slate-400" />
           )}
-        </Button>
+        </button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start">

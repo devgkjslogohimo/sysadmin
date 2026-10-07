@@ -1,7 +1,8 @@
 import { Controller, useFieldArray } from 'react-hook-form'
+
 import type { Control, UseFormReturn } from 'react-hook-form'
 
-import { Plus, Trash2, UserRound, Users } from 'lucide-react'
+import { IdCard, Plus, Trash2, UserRound, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
@@ -13,8 +14,6 @@ import {
 } from '@/components/ui/field'
 
 import { Input } from '@/components/ui/input'
-
-import { Separator } from '@/components/ui/separator'
 
 import {
   Select,
@@ -76,29 +75,35 @@ export function KKFormFields({ form, disabled = false }: Props) {
   }
 
   return (
-    <div className="min-w-0 space-y-7">
+    <div className="min-w-0 space-y-5">
       <KKSection control={form.control} disabled={disabled} />
 
-      <Separator />
-
-      <section className="min-w-0 space-y-4">
-        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+        {/* HEADER ANGGOTA */}
+        <div className="flex min-w-0 flex-col gap-3 border-b border-slate-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <Users className="size-4 shrink-0 text-muted-foreground" />
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <Users className="size-4" />
+              </div>
 
-              <h3 className="font-semibold">Anggota Keluarga</h3>
+              <div className="min-w-0">
+                <h3 className="text-sm font-semibold text-slate-900">
+                  Anggota Keluarga
+                </h3>
+
+                <p className="mt-0.5 text-xs text-slate-500">
+                  {anggota.fields.length.toLocaleString('id-ID')} anggota
+                  keluarga
+                </p>
+              </div>
             </div>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              {anggota.fields.length} anggota keluarga
-            </p>
           </div>
 
           <Button
             type="button"
             variant="outline"
-            className="shrink-0"
+            className="h-9 shrink-0 rounded-lg border-slate-200 bg-white px-3 shadow-none"
             disabled={disabled}
             onClick={handleAddMember}
           >
@@ -107,7 +112,8 @@ export function KKFormFields({ form, disabled = false }: Props) {
           </Button>
         </div>
 
-        <div className="min-w-0 space-y-4">
+        {/* LIST ANGGOTA */}
+        <div className="space-y-3 bg-slate-50/40 p-3 sm:p-4">
           {anggota.fields.map((memberField, index) => (
             <MemberCard
               key={memberField.id}
@@ -129,97 +135,108 @@ function KKSection({
   disabled,
 }: {
   control: Control<ValidatedKK>
-
   disabled: boolean
 }) {
   return (
-    <section className="min-w-0 space-y-4">
-      <div>
-        <h3 className="font-semibold">Informasi Kartu Keluarga</h3>
+    <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="border-b border-slate-200 px-4 py-4 sm:px-5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <IdCard className="size-4" />
+          </div>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Informasi utama dan alamat Kartu Keluarga.
-        </p>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900">
+              Informasi Kartu Keluarga
+            </h3>
+
+            <p className="mt-0.5 text-xs leading-5 text-slate-500">
+              Informasi utama dan alamat Kartu Keluarga.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <FieldGroup className="grid min-w-0 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <TextField
-          control={control}
-          name="noKK"
-          label="Nomor KK"
-          nullable={false}
-          inputMode="numeric"
-          autoComplete="off"
-          disabled={disabled}
-        />
+      <div className="p-4 sm:p-5">
+        <FieldGroup className="grid min-w-0 gap-x-4 gap-y-3 md:grid-cols-2 lg:grid-cols-3">
+          <TextField
+            control={control}
+            name="noKK"
+            label="Nomor KK"
+            nullable={false}
+            inputMode="numeric"
+            autoComplete="off"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name="kepalaKeluarga"
-          label="Nama Kepala Keluarga"
-          nullable={false}
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name="kepalaKeluarga"
+            label="Nama Kepala Keluarga"
+            nullable={false}
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name="alamat"
-          label="Alamat"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name="alamat"
+            label="Alamat"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name="rt"
-          label="RT"
-          inputMode="numeric"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name="rt"
+            label="RT"
+            inputMode="numeric"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name="rw"
-          label="RW"
-          inputMode="numeric"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name="rw"
+            label="RW"
+            inputMode="numeric"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name="desaKelurahan"
-          label="Desa / Kelurahan"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name="desaKelurahan"
+            label="Desa / Kelurahan"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name="kecamatan"
-          label="Kecamatan"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name="kecamatan"
+            label="Kecamatan"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name="kabupatenKota"
-          label="Kabupaten / Kota"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name="kabupatenKota"
+            label="Kabupaten / Kota"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name="kodePos"
-          label="Kode Pos"
-          inputMode="numeric"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name="kodePos"
+            label="Kode Pos"
+            inputMode="numeric"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name="provinsi"
-          label="Provinsi"
-          disabled={disabled}
-        />
-      </FieldGroup>
+          <TextField
+            control={control}
+            name="provinsi"
+            label="Provinsi"
+            disabled={disabled}
+          />
+        </FieldGroup>
+      </div>
     </section>
   )
 }
@@ -241,17 +258,20 @@ function MemberCard({
   onRemove: () => void
 }) {
   return (
-    <div className="min-w-0 overflow-hidden rounded-xl border bg-slate-50/40 p-4 sm:p-5">
-      <div className="mb-5 flex min-w-0 items-center justify-between gap-4">
+    <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+      {/* HEADER MEMBER */}
+      <div className="flex min-w-0 items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-background shadow-sm">
-            <UserRound className="size-4 text-muted-foreground" />
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+            <UserRound className="size-4" />
           </div>
 
           <div className="min-w-0">
-            <div className="truncate font-semibold">Anggota {index + 1}</div>
+            <div className="truncate text-sm font-semibold text-slate-900">
+              Anggota {index + 1}
+            </div>
 
-            <div className="truncate text-xs text-muted-foreground">
+            <div className="truncate text-[11px] text-slate-400">
               Data anggota keluarga
             </div>
           </div>
@@ -262,83 +282,86 @@ function MemberCard({
             type="button"
             variant="ghost"
             size="icon"
-            className="shrink-0"
+            className="size-8 shrink-0 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600"
             disabled={disabled}
             onClick={onRemove}
             aria-label={`Hapus anggota ${index + 1}`}
           >
-            <Trash2 className="size-4 text-destructive" />
+            <Trash2 className="size-4" />
           </Button>
         )}
       </div>
 
-      <div className="grid min-w-0 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <TextField
-          control={control}
-          name={`anggota.${index}.nama`}
-          label="Nama Lengkap"
-          nullable={false}
-          disabled={disabled}
-        />
+      {/* FIELDS */}
+      <div className="p-4">
+        <div className="grid min-w-0 gap-x-4 gap-y-3 md:grid-cols-2 lg:grid-cols-3">
+          <TextField
+            control={control}
+            name={`anggota.${index}.nama`}
+            label="Nama Lengkap"
+            nullable={false}
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name={`anggota.${index}.nik`}
-          label="NIK"
-          nullable={false}
-          inputMode="numeric"
-          autoComplete="off"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name={`anggota.${index}.nik`}
+            label="NIK"
+            nullable={false}
+            inputMode="numeric"
+            autoComplete="off"
+            disabled={disabled}
+          />
 
-        <GenderField
-          control={control}
-          name={`anggota.${index}.jenisKelamin`}
-          disabled={disabled}
-        />
+          <GenderField
+            control={control}
+            name={`anggota.${index}.jenisKelamin`}
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name={`anggota.${index}.tempatLahir`}
-          label="Tempat Lahir"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name={`anggota.${index}.tempatLahir`}
+            label="Tempat Lahir"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name={`anggota.${index}.tanggalLahir`}
-          label="Tanggal Lahir"
-          placeholder="DD-MM-YYYY"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name={`anggota.${index}.tanggalLahir`}
+            label="Tanggal Lahir"
+            placeholder="DD-MM-YYYY"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name={`anggota.${index}.agama`}
-          label="Agama"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name={`anggota.${index}.agama`}
+            label="Agama"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name={`anggota.${index}.pendidikan`}
-          label="Pendidikan"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name={`anggota.${index}.pendidikan`}
+            label="Pendidikan"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name={`anggota.${index}.pekerjaan`}
-          label="Pekerjaan"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name={`anggota.${index}.pekerjaan`}
+            label="Pekerjaan"
+            disabled={disabled}
+          />
 
-        <TextField
-          control={control}
-          name={`anggota.${index}.golonganDarah`}
-          label="Golongan Darah"
-          disabled={disabled}
-        />
+          <TextField
+            control={control}
+            name={`anggota.${index}.golonganDarah`}
+            label="Golongan Darah"
+            disabled={disabled}
+          />
+        </div>
       </div>
     </div>
   )
@@ -378,8 +401,13 @@ function TextField({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <Field className="min-w-0" data-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+        <Field className="min-w-0 gap-1.5" data-invalid={fieldState.invalid}>
+          <FieldLabel
+            htmlFor={field.name}
+            className="text-sm font-medium text-slate-700"
+          >
+            {label}
+          </FieldLabel>
 
           <Input
             id={field.name}
@@ -391,7 +419,7 @@ function TextField({
             autoComplete={autoComplete}
             disabled={disabled}
             aria-invalid={fieldState.invalid}
-            className="w-full min-w-0"
+            className="h-10 w-full min-w-0 rounded-lg border-slate-200 bg-white shadow-none"
             value={field.value == null ? '' : field.value}
             onChange={(event) => {
               const value = event.target.value
@@ -423,8 +451,10 @@ function GenderField({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <Field className="min-w-0" data-invalid={fieldState.invalid}>
-          <FieldLabel>Jenis Kelamin</FieldLabel>
+        <Field className="min-w-0 gap-1.5" data-invalid={fieldState.invalid}>
+          <FieldLabel className="text-sm font-medium text-slate-700">
+            Jenis Kelamin
+          </FieldLabel>
 
           <Select
             value={field.value ?? ''}
@@ -436,7 +466,7 @@ function GenderField({
             }}
           >
             <SelectTrigger
-              className="w-full min-w-0"
+              className="w-full min-w-0 rounded-lg border-slate-200 bg-white shadow-none data-[size=default]:h-10"
               aria-invalid={fieldState.invalid}
             >
               <SelectValue placeholder="Pilih jenis kelamin" />

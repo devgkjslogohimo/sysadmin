@@ -1,44 +1,82 @@
-import type { KKMemberView } from './types'
+import { CalendarDays } from 'lucide-react'
+
 import { GenderBadge } from './gender-badge'
+
+import type { KKMemberView } from './types'
 
 type Props = {
   member: KKMemberView
   nik: string
+  sensitiveVisible: boolean
 }
 
-export function KKMemberMobile({ member, nik }: Props) {
+export function KKMemberMobile({ member, nik, sensitiveVisible }: Props) {
   return (
-    <div className="space-y-4 p-5">
+    <article className="px-5 py-5">
+      {/* IDENTITAS */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="text-xs font-medium text-muted-foreground">
+        <div className="min-w-0 flex-1">
+          <div className="text-xs font-medium text-slate-400">
             Anggota #{member.no}
           </div>
 
-          <div className="mt-1 font-semibold">{member.nama}</div>
+          <div className="mt-1 truncate text-base font-semibold text-slate-900">
+            {member.nama}
+          </div>
         </div>
 
         <GenderBadge value={member.jenisKelamin} />
       </div>
 
-      <div className="rounded-lg bg-slate-50 p-3">
-        <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      {/* NIK */}
+      <div
+        className={[
+          'mt-4 rounded-xl border px-3.5 py-3',
+          sensitiveVisible
+            ? 'border-amber-200 bg-amber-50/70'
+            : 'border-slate-200 bg-slate-50',
+        ].join(' ')}
+      >
+        <div
+          className={[
+            'text-[11px] font-medium',
+            sensitiveVisible ? 'text-amber-700' : 'text-slate-400',
+          ].join(' ')}
+        >
           NIK
         </div>
 
-        <div className="font-mono text-sm">{nik}</div>
+        <div
+          className={[
+            'mt-1 break-all font-mono text-sm font-semibold tabular-nums',
+            sensitiveVisible ? 'text-amber-900' : 'text-slate-700',
+          ].join(' ')}
+        >
+          {nik}
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-4 text-sm">
+      {/* DATA PRIBADI */}
+      <div className="mt-5 grid grid-cols-2 gap-x-5 gap-y-4">
         <MobileInfo label="Tempat Lahir" value={member.tempatLahir} />
 
-        <MobileInfo label="Tanggal Lahir" value={member.tanggalLahir} />
+        <div>
+          <div className="text-xs font-medium text-slate-400">
+            Tanggal Lahir
+          </div>
+
+          <div className="mt-1 flex items-center gap-1.5 text-sm font-medium text-slate-700">
+            <CalendarDays className="size-3.5 shrink-0 text-slate-400" />
+
+            {member.tanggalLahir ?? '-'}
+          </div>
+        </div>
 
         <MobileInfo label="Agama" value={member.agama} />
 
         <MobileInfo label="Gol. Darah" value={member.golonganDarah} />
 
-        <div className="col-span-2">
+        <div className="col-span-2 border-t border-slate-100 pt-4">
           <MobileInfo label="Pendidikan" value={member.pendidikan} />
         </div>
 
@@ -46,18 +84,18 @@ export function KKMemberMobile({ member, nik }: Props) {
           <MobileInfo label="Pekerjaan" value={member.pekerjaan} />
         </div>
       </div>
-    </div>
+    </article>
   )
 }
 
 function MobileInfo({ label, value }: { label: string; value: string | null }) {
   return (
-    <div>
-      <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </div>
+    <div className="min-w-0">
+      <div className="text-xs font-medium text-slate-400">{label}</div>
 
-      <div className="font-medium">{value ?? '-'}</div>
+      <div className="mt-1 text-sm font-medium leading-6 text-slate-700">
+        {value || '-'}
+      </div>
     </div>
   )
 }

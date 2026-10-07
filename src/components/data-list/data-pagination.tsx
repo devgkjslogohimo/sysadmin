@@ -1,7 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-
 import {
   Select,
   SelectContent,
@@ -10,23 +9,26 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import type { KKPagination } from './types'
+export type DataPaginationState = {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
 
-type PageSize = 10 | 20 | 50 | 100
+export type PageSize = 10 | 20 | 50 | 100
 
 type Props = {
-  pagination: KKPagination
+  pagination: DataPaginationState
 
   onPageChange: (page: number) => void
 
   onPageSizeChange: (size: PageSize) => void
 }
 
-export function KKListPagination({
+export function DataPagination({
   pagination,
-
   onPageChange,
-
   onPageSizeChange,
 }: Props) {
   const totalPages = Math.max(pagination.totalPages, 1)
@@ -41,8 +43,8 @@ export function KKListPagination({
   )
 
   return (
-    <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="text-xs text-muted-foreground">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="text-xs text-slate-500">
         Menampilkan <strong>{from}</strong>
         {' – '}
         <strong>{to}</strong>
@@ -52,7 +54,7 @@ export function KKListPagination({
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <span className="whitespace-nowrap text-xs text-muted-foreground">
+          <span className="whitespace-nowrap text-xs text-slate-500">
             Baris
           </span>
 
@@ -66,7 +68,7 @@ export function KKListPagination({
               }
             }}
           >
-            <SelectTrigger className="h-9 w-20">
+            <SelectTrigger className="h-9 w-20 bg-white">
               <SelectValue />
             </SelectTrigger>
 
@@ -82,7 +84,7 @@ export function KKListPagination({
           </Select>
         </div>
 
-        <span className="whitespace-nowrap text-xs text-muted-foreground">
+        <span className="whitespace-nowrap text-xs text-slate-500">
           Halaman <strong>{pagination.page}</strong>
           {' dari '}
           <strong>{totalPages}</strong>

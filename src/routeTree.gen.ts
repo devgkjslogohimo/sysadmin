@@ -12,7 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DataAnggotaRouteImport } from './routes/data-anggota'
 import { Route as DataKkRouteImport } from './routes/data-kk'
+import { Route as EventKesehatanRouteImport } from './routes/event-kesehatan'
+import { Route as DataAnggotaIdRouteImport } from './routes/data-anggota_.$id'
 import { Route as DataKkIdRouteImport } from './routes/data-kk_.$id'
+import { Route as EventKesehatanIdRouteImport } from './routes/event-kesehatan_.$id'
+import { Route as FiturParserKkRouteImport } from './routes/fitur.parser-kk'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,9 +33,29 @@ const DataKkRoute = DataKkRouteImport.update({
   path: '/data-kk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventKesehatanRoute = EventKesehatanRouteImport.update({
+  id: '/event-kesehatan',
+  path: '/event-kesehatan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataAnggotaIdRoute = DataAnggotaIdRouteImport.update({
+  id: '/data-anggota_/$id',
+  path: '/data-anggota/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DataKkIdRoute = DataKkIdRouteImport.update({
   id: '/data-kk_/$id',
   path: '/data-kk/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventKesehatanIdRoute = EventKesehatanIdRouteImport.update({
+  id: '/event-kesehatan_/$id',
+  path: '/event-kesehatan/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FiturParserKkRoute = FiturParserKkRouteImport.update({
+  id: '/fitur/parser-kk',
+  path: '/fitur/parser-kk',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -39,34 +63,75 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/data-anggota': typeof DataAnggotaRoute
   '/data-kk': typeof DataKkRoute
+  '/event-kesehatan': typeof EventKesehatanRoute
+  '/data-anggota/$id': typeof DataAnggotaIdRoute
   '/data-kk/$id': typeof DataKkIdRoute
+  '/event-kesehatan/$id': typeof EventKesehatanIdRoute
+  '/fitur/parser-kk': typeof FiturParserKkRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/data-anggota': typeof DataAnggotaRoute
   '/data-kk': typeof DataKkRoute
+  '/event-kesehatan': typeof EventKesehatanRoute
+  '/data-anggota/$id': typeof DataAnggotaIdRoute
   '/data-kk/$id': typeof DataKkIdRoute
+  '/event-kesehatan/$id': typeof EventKesehatanIdRoute
+  '/fitur/parser-kk': typeof FiturParserKkRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/data-anggota': typeof DataAnggotaRoute
   '/data-kk': typeof DataKkRoute
+  '/event-kesehatan': typeof EventKesehatanRoute
+  '/data-anggota_/$id': typeof DataAnggotaIdRoute
   '/data-kk_/$id': typeof DataKkIdRoute
+  '/event-kesehatan_/$id': typeof EventKesehatanIdRoute
+  '/fitur/parser-kk': typeof FiturParserKkRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/data-anggota' | '/data-kk' | '/data-kk/$id'
+  fullPaths:
+    | '/'
+    | '/data-anggota'
+    | '/data-kk'
+    | '/event-kesehatan'
+    | '/data-anggota/$id'
+    | '/data-kk/$id'
+    | '/event-kesehatan/$id'
+    | '/fitur/parser-kk'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/data-anggota' | '/data-kk' | '/data-kk/$id'
-  id: '__root__' | '/' | '/data-anggota' | '/data-kk' | '/data-kk_/$id'
+  to:
+    | '/'
+    | '/data-anggota'
+    | '/data-kk'
+    | '/event-kesehatan'
+    | '/data-anggota/$id'
+    | '/data-kk/$id'
+    | '/event-kesehatan/$id'
+    | '/fitur/parser-kk'
+  id:
+    | '__root__'
+    | '/'
+    | '/data-anggota'
+    | '/data-kk'
+    | '/event-kesehatan'
+    | '/data-anggota_/$id'
+    | '/data-kk_/$id'
+    | '/event-kesehatan_/$id'
+    | '/fitur/parser-kk'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DataAnggotaRoute: typeof DataAnggotaRoute
   DataKkRoute: typeof DataKkRoute
+  EventKesehatanRoute: typeof EventKesehatanRoute
+  DataAnggotaIdRoute: typeof DataAnggotaIdRoute
   DataKkIdRoute: typeof DataKkIdRoute
+  EventKesehatanIdRoute: typeof EventKesehatanIdRoute
+  FiturParserKkRoute: typeof FiturParserKkRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -92,11 +157,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataKkRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/event-kesehatan': {
+      id: '/event-kesehatan'
+      path: '/event-kesehatan'
+      fullPath: '/event-kesehatan'
+      preLoaderRoute: typeof EventKesehatanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data-anggota_/$id': {
+      id: '/data-anggota_/$id'
+      path: '/data-anggota/$id'
+      fullPath: '/data-anggota/$id'
+      preLoaderRoute: typeof DataAnggotaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/data-kk_/$id': {
       id: '/data-kk_/$id'
       path: '/data-kk/$id'
       fullPath: '/data-kk/$id'
       preLoaderRoute: typeof DataKkIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/event-kesehatan_/$id': {
+      id: '/event-kesehatan_/$id'
+      path: '/event-kesehatan/$id'
+      fullPath: '/event-kesehatan/$id'
+      preLoaderRoute: typeof EventKesehatanIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fitur/parser-kk': {
+      id: '/fitur/parser-kk'
+      path: '/fitur/parser-kk'
+      fullPath: '/fitur/parser-kk'
+      preLoaderRoute: typeof FiturParserKkRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -106,7 +199,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DataAnggotaRoute: DataAnggotaRoute,
   DataKkRoute: DataKkRoute,
+  EventKesehatanRoute: EventKesehatanRoute,
+  DataAnggotaIdRoute: DataAnggotaIdRoute,
   DataKkIdRoute: DataKkIdRoute,
+  EventKesehatanIdRoute: EventKesehatanIdRoute,
+  FiturParserKkRoute: FiturParserKkRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

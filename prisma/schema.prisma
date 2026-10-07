@@ -61,6 +61,8 @@ model AnggotaKeluarga {
   pekerjaan     String?
   golonganDarah String? @map("golongan_darah")
 
+  pemeriksaanKesehatan PemeriksaanKesehatan[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -68,4 +70,69 @@ model AnggotaKeluarga {
   @@index([kkId])
   @@index([nikHash])
   @@map("anggota_keluarga")
+}
+
+model EventKesehatan {
+  id Int @id @default(autoincrement())
+
+  nama    String
+  tanggal DateTime @db.Date
+  lokasi  String?
+
+  isClosed Boolean   @default(false) @map("is_closed")
+  closedAt DateTime? @map("closed_at")
+
+  pemeriksaan PemeriksaanKesehatan[]
+  petugas     PetugasEvent[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("event_kesehatan")
+}
+
+model PemeriksaanKesehatan {
+  id Int @id @default(autoincrement())
+
+  eventId   Int @map("event_id")
+  anggotaId Int @map("anggota_id")
+
+  event   EventKesehatan  @relation(fields: [eventId], references: [id])
+  anggota AnggotaKeluarga @relation(fields: [anggotaId], references: [id])
+
+  tensiSistolik  Int? @map("tensi_sistolik")
+  tensiDiastolik Int? @map("tensi_diastolik")
+
+  gulaDarah  Int?   @map("gula_darah")
+  kolesterol Int?
+  asamUrat   Float? @map("asam_urat")
+
+  beratBadan  Float? @map("berat_badan")
+  tinggiBadan Float? @map("tinggi_badan")
+
+  keluhan      String?
+  hasilRingkas String? @map("hasil_ringkas")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([eventId, anggotaId])
+  @@index([anggotaId])
+  @@index([eventId])
+  @@map("pemeriksaan_kesehatan")
+}
+
+model PetugasEvent {
+  id Int @id @default(autoincrement())
+
+  eventId Int            @map("event_id")
+  event   EventKesehatan @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  nama String
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([eventId, nama])
+  @@index([eventId])
+  @@map("petugas_event")
 }

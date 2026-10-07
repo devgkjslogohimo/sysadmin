@@ -3,66 +3,90 @@
 @plugin '@tailwindcss/typography';
 
 @import 'tw-animate-css';
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/geist';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --sea-ink: #173a40;
-  --sea-ink-soft: #416166;
-  --lagoon: #4fb8b2;
-  --lagoon-deep: #328f97;
-  --palm: #2f6a4a;
-  --sand: #e7f0e8;
-  --foam: #f3faf5;
-  --surface: rgba(255, 255, 255, 0.74);
-  --surface-strong: rgba(255, 255, 255, 0.9);
-  --line: rgba(23, 58, 64, 0.14);
-  --inset-glint: rgba(255, 255, 255, 0.82);
-  --kicker: rgba(47, 106, 74, 0.9);
-  --bg-base: #e7f3ec;
-  --header-bg: rgba(251, 255, 248, 0.84);
-  --chip-bg: rgba(255, 255, 255, 0.8);
-  --chip-line: rgba(47, 106, 74, 0.18);
-  --link-bg-hover: rgba(255, 255, 255, 0.9);
-  --hero-a: rgba(79, 184, 178, 0.36);
-  --hero-b: rgba(47, 106, 74, 0.2);
+  --sea-ink: #172554;
+  --sea-ink-soft: #475569;
+
+  --lagoon: #3b82f6;
+  --lagoon-deep: #2563eb;
+
+  --palm: #1d4ed8;
+
+  --sand: #eff6ff;
+  --foam: #f8fbff;
+
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: rgba(255, 255, 255, 0.94);
+
+  --line: rgba(30, 64, 175, 0.14);
+  --inset-glint: rgba(255, 255, 255, 0.9);
+
+  --kicker: rgba(37, 99, 235, 0.95);
+
+  --bg-base: #f1f5ff;
+  --header-bg: rgba(255, 255, 255, 0.9);
+
+  --chip-bg: rgba(239, 246, 255, 0.9);
+  --chip-line: rgba(37, 99, 235, 0.18);
+
+  --link-bg-hover: rgba(239, 246, 255, 0.95);
+
+  --hero-a: rgba(59, 130, 246, 0.24);
+  --hero-b: rgba(29, 78, 216, 0.14);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
+
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+
+  /* BLUE PRIMARY */
+  --primary: oklch(0.546 0.245 262.881);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.97 0.014 254.604);
+  --secondary-foreground: oklch(0.282 0.091 267.935);
+
+  --muted: oklch(0.97 0.014 254.604);
+  --muted-foreground: oklch(0.551 0.027 264.364);
+
+  --accent: oklch(0.932 0.032 255.585);
+  --accent-foreground: oklch(0.282 0.091 267.935);
+
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --border: oklch(0.922 0.014 255.508);
+  --input: oklch(0.922 0.014 255.508);
+
+  --ring: oklch(0.546 0.245 262.881);
+
+  --chart-1: oklch(0.546 0.245 262.881);
+  --chart-2: oklch(0.623 0.214 259.815);
+  --chart-3: oklch(0.707 0.165 254.624);
+  --chart-4: oklch(0.488 0.243 264.376);
+  --chart-5: oklch(0.424 0.199 265.638);
+
+  --sidebar: oklch(0.985 0.006 255);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+
+  --sidebar-primary: oklch(0.546 0.245 262.881);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  --sidebar-accent: oklch(0.932 0.032 255.585);
+  --sidebar-accent-foreground: oklch(0.282 0.091 267.935);
+
+  --sidebar-border: oklch(0.922 0.014 255.508);
+  --sidebar-ring: oklch(0.546 0.245 262.881);
 }
 
 .dark {
@@ -178,8 +202,17 @@ body {
   background:
     radial-gradient(1100px 620px at -8% -10%, var(--hero-a), transparent 58%),
     radial-gradient(1050px 620px at 112% -12%, var(--hero-b), transparent 62%),
-    radial-gradient(720px 380px at 50% 115%, rgba(79, 184, 178, 0.1), transparent 68%),
-    linear-gradient(180deg, color-mix(in oklab, var(--sand) 68%, white) 0%, var(--foam) 44%, var(--bg-base) 100%);
+    radial-gradient(
+      720px 380px at 50% 115%,
+      rgba(79, 184, 178, 0.1),
+      transparent 68%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--sand) 68%, white) 0%,
+      var(--foam) 44%,
+      var(--bg-base) 100%
+    );
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -193,8 +226,16 @@ body::before {
   z-index: -1;
   opacity: 0.28;
   background:
-    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
-    radial-gradient(circle at 78% 26%, rgba(79, 184, 178, 0.2), transparent 42%),
+    radial-gradient(
+      circle at 20% 15%,
+      rgba(255, 255, 255, 0.8),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 78% 26%,
+      rgba(79, 184, 178, 0.2),
+      transparent 42%
+    ),
     radial-gradient(circle at 42% 82%, rgba(47, 106, 74, 0.14), transparent 36%);
 }
 
@@ -210,17 +251,6 @@ body::after {
     linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 28px 28px;
   mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
-}
-
-a {
-  color: var(--lagoon-deep);
-  text-decoration-color: rgba(50, 143, 151, 0.4);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-
-a:hover {
-  color: #246f76;
 }
 
 code {
@@ -267,7 +297,11 @@ pre code {
 }
 
 .feature-card {
-  background: linear-gradient(165deg, color-mix(in oklab, var(--surface-strong) 93%, white 7%), var(--surface));
+  background: linear-gradient(
+    165deg,
+    color-mix(in oklab, var(--surface-strong) 93%, white 7%),
+    var(--surface)
+  );
   box-shadow:
     0 1px 0 var(--inset-glint) inset,
     0 18px 34px rgba(30, 90, 72, 0.1),
@@ -282,7 +316,10 @@ pre code {
 button,
 .island-shell,
 a {
-  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
     transform 180ms ease;
 }
 

@@ -1,4 +1,7 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
+
+import { ShieldCheck, TriangleAlert } from 'lucide-react'
+
 import { useState } from 'react'
 
 import { EditKKDialog } from '@/components/kk/edit-kk-dialog'
@@ -44,8 +47,8 @@ function KKDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50/80">
-      <div className="mx-auto w-full max-w-350 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <main className="bg-slate-50/70">
+      <div className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
         <KKDetailHeader
           kepalaKeluarga={data.kepalaKeluarga}
           desaKelurahan={data.desaKelurahan}
@@ -58,34 +61,49 @@ function KKDetailPage() {
         />
 
         {sensitive.error && (
-          <div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-            {sensitive.error}
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50/60 px-4 py-3.5 text-sm text-red-700">
+            <TriangleAlert className="mt-0.5 size-4 shrink-0" />
+
+            <div className="min-w-0">
+              <div className="font-medium">
+                Data sensitif tidak dapat dibuka
+              </div>
+
+              <p className="mt-0.5 text-xs leading-5 text-red-600">
+                {sensitive.error}
+              </p>
+            </div>
           </div>
         )}
 
-        <KKInfoCard
-          noKK={sensitive.getNoKK(data.noKK)}
-          kepalaKeluarga={data.kepalaKeluarga}
-          alamat={data.alamat}
-          rt={data.rt}
-          rw={data.rw}
-          desaKelurahan={data.desaKelurahan}
-          kecamatan={data.kecamatan}
-          kabupatenKota={data.kabupatenKota}
-          kodePos={data.kodePos}
-          provinsi={data.provinsi}
-        />
+        <div className="space-y-6">
+          <KKInfoCard
+            noKK={sensitive.getNoKK(data.noKK)}
+            kepalaKeluarga={data.kepalaKeluarga}
+            alamat={data.alamat}
+            rt={data.rt}
+            rw={data.rw}
+            desaKelurahan={data.desaKelurahan}
+            kecamatan={data.kecamatan}
+            kabupatenKota={data.kabupatenKota}
+            kodePos={data.kodePos}
+            provinsi={data.provinsi}
+          />
 
-        <KKMembersCard
-          members={data.anggota}
-          sensitiveVisible={sensitive.isVisible}
-          getNik={sensitive.getNik}
-        />
+          <KKMembersCard
+            members={data.anggota}
+            sensitiveVisible={sensitive.isVisible}
+            getNik={sensitive.getNik}
+          />
+        </div>
 
-        <div className="mt-5 flex flex-col gap-1 text-xs text-muted-foreground sm:flex-row sm:justify-between">
+        <div className="mt-6 flex flex-col gap-2 border-t border-slate-200 pt-4 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <span>Data ID #{data.id}</span>
 
-          <span>Data sensitif disimpan dalam keadaan terenkripsi</span>
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="size-3.5" />
+            Data sensitif disimpan dalam keadaan terenkripsi
+          </span>
         </div>
       </div>
 

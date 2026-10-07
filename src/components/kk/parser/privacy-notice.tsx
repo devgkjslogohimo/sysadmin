@@ -2,19 +2,20 @@ import { ShieldCheck } from 'lucide-react'
 
 export function PrivacyNotice() {
   return (
-    <div className="mb-6 flex gap-3 rounded-xl border border-blue-200 bg-blue-50/70 p-4">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white text-blue-600 shadow-sm">
+    <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
         <ShieldCheck className="size-4" />
       </div>
 
-      <div>
-        <div className="text-sm font-semibold text-blue-950">
-          Data diproses sementara
+      <div className="min-w-0">
+        <div className="text-sm font-semibold text-slate-800">
+          Data sensitif tetap terlindungi
         </div>
 
-        <p className="mt-1 text-xs leading-relaxed text-blue-800/80">
-          Raw text tidak disimpan ke localStorage. Nomor KK dan NIK
-          disembunyikan pada preview secara default.
+        <p className="mt-1 text-xs leading-5 text-slate-500">
+          Teks mentah tidak disimpan ke localStorage. Nomor KK dan NIK
+          disembunyikan pada preview secara default dan hanya ditampilkan jika
+          pengguna memilih untuk membukanya.
         </p>
       </div>
     </div>
