@@ -35,12 +35,10 @@ export function usePemeriksaanEvent({ eventId, refreshKey }: Props) {
         if (!cancelled) {
           setData(result)
         }
-      } catch (error) {
+      } catch (err) {
         if (!cancelled) {
           setError(
-            error instanceof Error
-              ? error.message
-              : 'Gagal memuat pemeriksaan.',
+            err instanceof Error ? err.message : 'Gagal memuat pemeriksaan.',
           )
         }
       } finally {

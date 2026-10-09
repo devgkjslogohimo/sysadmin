@@ -44,11 +44,11 @@ export function RingkasanKesehatan({ anggotaId }: Props) {
         if (!cancelled) {
           setData(result)
         }
-      } catch (error) {
+      } catch (err) {
         if (!cancelled) {
           setError(
-            error instanceof Error
-              ? error.message
+            err instanceof Error
+              ? err.message
               : 'Gagal memuat ringkasan kesehatan.',
           )
         }

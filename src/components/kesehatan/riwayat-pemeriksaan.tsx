@@ -41,13 +41,13 @@ export function RiwayatPemeriksaan({ anggotaId, refreshKey = 0 }: Props) {
         if (!cancelled) {
           setData(result)
         }
-      } catch (error) {
+      } catch (err) {
         if (!cancelled) {
           setData([])
 
           setError(
-            error instanceof Error
-              ? error.message
+            err instanceof Error
+              ? err.message
               : 'Gagal memuat riwayat kesehatan.',
           )
         }

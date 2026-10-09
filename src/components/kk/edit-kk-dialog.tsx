@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IdCard, Loader2, Pencil, Save, TriangleAlert } from 'lucide-react'
+import { Loader2, Pencil, Save, TriangleAlert } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'

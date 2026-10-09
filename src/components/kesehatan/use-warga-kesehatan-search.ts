@@ -50,14 +50,12 @@ export function useWargaKesehatanSearch({ eventId, refreshKey }: Props) {
           setResults(data)
           setHasSearched(true)
         }
-      } catch (error) {
+      } catch (err) {
         if (!cancelled) {
           setResults([])
           setHasSearched(true)
 
-          setError(
-            error instanceof Error ? error.message : 'Gagal mencari warga.',
-          )
+          setError(err instanceof Error ? err.message : 'Gagal mencari warga.')
         }
       } finally {
         if (!cancelled) {
