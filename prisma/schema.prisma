@@ -61,6 +61,13 @@ model AnggotaKeluarga {
   pekerjaan     String?
   golonganDarah String? @map("golongan_darah")
 
+  ayah             String?
+  ibu              String?
+  baptisAnak       String? @map("baptis_anak")
+  sidiBaptisDewasa String? @map("sidi_baptis_dewasa")
+  menikah          String?
+  domisili         String?
+
   pemeriksaanKesehatan PemeriksaanKesehatan[]
 
   createdAt DateTime @default(now()) @map("created_at")

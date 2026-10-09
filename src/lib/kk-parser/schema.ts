@@ -3,6 +3,7 @@ import { z } from 'zod'
 const nullableText = z.string().trim().nullable()
 
 export const kkMemberSchema = z.object({
+  id: z.number().int().positive().optional(),
   no: z.number().int().positive(),
 
   nama: z.string().trim().min(1, 'Nama tidak boleh kosong'),
@@ -25,6 +26,12 @@ export const kkMemberSchema = z.object({
   pendidikan: nullableText,
   pekerjaan: nullableText,
   golonganDarah: nullableText,
+  ayah: nullableText,
+  ibu: nullableText,
+  baptisAnak: nullableText,
+  sidiBaptisDewasa: nullableText,
+  menikah: nullableText,
+  domisili: nullableText,
 })
 
 export const kkSchema = z.object({

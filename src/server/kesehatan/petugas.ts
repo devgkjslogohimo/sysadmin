@@ -11,6 +11,27 @@ export const tambahPetugasEvent = createServerFn({
   .validator(tambahPetugasEventSchema)
   .handler(async ({ data }) => {
     await requireHealthAccess()
+
+    const event = await db.eventKesehatan.findUnique({
+      where: {
+        id: data.eventId,
+      },
+      select: {
+        id: true,
+        isClosed: true,
+      },
+    })
+
+    if (!event) {
+      throw new Error('Event kesehatan tidak ditemukan.')
+    }
+
+    if (event.isClosed) {
+      throw new Error(
+        'Event ini sudah ditutup. Petugas tidak dapat ditambahkan.',
+      )
+    }
+
     const existing = await db.petugasEvent.findFirst({
       where: {
         eventId: data.eventId,
@@ -45,7 +66,29 @@ export const hapusPetugasEvent = createServerFn({
 })
   .validator(hapusPetugasEventSchema)
   .handler(async ({ data }) => {
-    await requireHealthAccess()
+    const petugas = await db.petugasEvent.findUnique({
+      where: {
+        id: data.id,
+      },
+      select: {
+        id: true,
+
+        event: {
+          select: {
+            isClosed: true,
+          },
+        },
+      },
+    })
+
+    if (!petugas) {
+      throw new Error('Petugas event tidak ditemukan.')
+    }
+
+    if (petugas.event.isClosed) {
+      throw new Error('Event ini sudah ditutup. Petugas tidak dapat dihapus.')
+    }
+
     await db.petugasEvent.delete({
       where: {
         id: data.id,

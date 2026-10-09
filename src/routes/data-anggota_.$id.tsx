@@ -243,6 +243,46 @@ function DataAnggotaDetailPage() {
           </Card>
         </div>
 
+        {/* DATA KELUARGA & GEREJAWI */}
+        <Card className="mt-6 overflow-hidden rounded-2xl border-slate-200 bg-white shadow-sm">
+          <CardHeader className="border-b border-slate-200 px-5 py-4 sm:px-6">
+            <div className="flex items-start gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                <UsersRound className="size-4" />
+              </div>
+
+              <div>
+                <CardTitle className="text-base font-semibold text-slate-900">
+                  Keluarga & Data Gerejawi
+                </CardTitle>
+
+                <p className="mt-0.5 text-xs leading-5 text-slate-500">
+                  Informasi keluarga, domisili, dan riwayat gerejawi anggota
+                </p>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5 sm:p-6">
+            <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+              <Info label="Ayah" value={anggota.ayah} />
+
+              <Info label="Ibu" value={anggota.ibu} />
+
+              <Info label="Domisili" value={anggota.domisili} />
+
+              <Info label="Baptis Anak" value={anggota.baptisAnak} />
+
+              <Info
+                label="Sidi / Baptis Dewasa"
+                value={anggota.sidiBaptisDewasa}
+              />
+
+              <Info label="Menikah" value={anggota.menikah} />
+            </div>
+          </CardContent>
+        </Card>
+
         {/* KESEHATAN */}
         <section className="mt-8">
           <div className="mb-4">

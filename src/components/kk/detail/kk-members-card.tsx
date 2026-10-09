@@ -132,8 +132,32 @@ function DesktopMembersTable({ members, sensitiveVisible, getNik }: Props) {
               Pekerjaan
             </TableHead>
 
-            <TableHead className="min-w-27.5 pr-6 text-xs font-semibold text-slate-500">
+            <TableHead className="min-w-27.5 text-xs font-semibold text-slate-500">
               Gol. Darah
+            </TableHead>
+
+            <TableHead className="min-w-40 text-xs font-semibold text-slate-500">
+              Ayah
+            </TableHead>
+
+            <TableHead className="min-w-40 text-xs font-semibold text-slate-500">
+              Ibu
+            </TableHead>
+
+            <TableHead className="min-w-40 text-xs font-semibold text-slate-500">
+              Domisili
+            </TableHead>
+
+            <TableHead className="min-w-35 text-xs font-semibold text-slate-500">
+              Baptis Anak
+            </TableHead>
+
+            <TableHead className="min-w-45 text-xs font-semibold text-slate-500">
+              Sidi / Baptis Dewasa
+            </TableHead>
+
+            <TableHead className="min-w-35 pr-6 text-xs font-semibold text-slate-500">
+              Menikah
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -204,8 +228,32 @@ function DesktopMembersTable({ members, sensitiveVisible, getNik }: Props) {
                 {member.pekerjaan ?? '-'}
               </TableCell>
 
-              <TableCell className="pr-6 text-sm font-medium text-slate-700">
+              <TableCell className="text-sm font-medium text-slate-700">
                 {member.golonganDarah ?? '-'}
+              </TableCell>
+
+              <TableCell className="text-sm text-slate-700">
+                {member.ayah ?? '-'}
+              </TableCell>
+
+              <TableCell className="text-sm text-slate-700">
+                {member.ibu ?? '-'}
+              </TableCell>
+
+              <TableCell className="text-sm text-slate-700">
+                {member.domisili ?? '-'}
+              </TableCell>
+
+              <TableCell className="text-sm text-slate-700">
+                {member.baptisAnak ?? '-'}
+              </TableCell>
+
+              <TableCell className="text-sm text-slate-700">
+                {member.sidiBaptisDewasa ?? '-'}
+              </TableCell>
+
+              <TableCell className="pr-6 text-sm text-slate-700">
+                {member.menikah ?? '-'}
               </TableCell>
             </TableRow>
           ))}

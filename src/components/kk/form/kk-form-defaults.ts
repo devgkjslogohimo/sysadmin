@@ -12,6 +12,13 @@ export function createEmptyMember(no: number): ValidatedKK['anggota'][number] {
     pendidikan: null,
     pekerjaan: null,
     golonganDarah: null,
+
+    ayah: null,
+    ibu: null,
+    baptisAnak: null,
+    sidiBaptisDewasa: null,
+    menikah: null,
+    domisili: null,
   }
 }
 

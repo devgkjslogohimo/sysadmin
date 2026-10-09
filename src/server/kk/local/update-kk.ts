@@ -99,26 +99,100 @@ export const updateKKLocal = createServerFn({
       })
 
       /*
-       * Untuk versi local sekarang
-       * lebih sederhana dan aman:
-       * anggota lama dihapus lalu
-       * dibuat ulang dalam transaksi
-       * yang sama.
+       * Ambil anggota yang saat ini tersimpan.
+       * ID harus dipertahankan karena dapat sudah terhubung
+       * dengan riwayat pemeriksaan kesehatan.
        */
-      await tx.anggotaKeluarga.deleteMany({
+      const existingMembers = await tx.anggotaKeluarga.findMany({
         where: {
           kkId: id,
         },
+
+        select: {
+          id: true,
+          nama: true,
+
+          _count: {
+            select: {
+              pemeriksaanKesehatan: true,
+            },
+          },
+        },
       })
 
-      const anggotaData = kk.anggota.map((member, index) => {
-        const nikHash = hashIdentityNumber(member.nik)
+      const existingIds = new Set(existingMembers.map((member) => member.id))
 
+      const incomingExistingIds = kk.anggota
+        .map((member) => member.id)
+        .filter((memberId): memberId is number => memberId !== undefined)
+
+      /*
+       * Jangan menerima ID anggota milik KK lain.
+       */
+      for (const memberId of incomingExistingIds) {
+        if (!existingIds.has(memberId)) {
+          throw new Error(
+            'Terdapat data anggota yang tidak sesuai dengan Kartu Keluarga ini.',
+          )
+        }
+      }
+
+      /*
+       * Jangan menerima ID anggota yang sama lebih dari sekali.
+       */
+      if (new Set(incomingExistingIds).size !== incomingExistingIds.length) {
+        throw new Error(
+          'Terdapat anggota keluarga yang tercatat lebih dari satu kali.',
+        )
+      }
+
+      /*
+       * Anggota yang hilang dari form dianggap akan dihapus.
+       */
+      const incomingIdSet = new Set(incomingExistingIds)
+
+      const removedMembers = existingMembers.filter(
+        (member) => !incomingIdSet.has(member.id),
+      )
+
+      /*
+       * Anggota yang sudah mempunyai riwayat kesehatan
+       * tidak boleh dihapus.
+       */
+      const memberWithHealthHistory = removedMembers.find(
+        (member) => member._count.pemeriksaanKesehatan > 0,
+      )
+
+      if (memberWithHealthHistory) {
+        throw new Error(
+          `Anggota ${memberWithHealthHistory.nama} tidak dapat dihapus karena sudah memiliki riwayat pemeriksaan kesehatan.`,
+        )
+      }
+
+      /*
+       * Hapus hanya anggota yang benar-benar dihapus dari form
+       * dan tidak mempunyai riwayat kesehatan.
+       */
+      if (removedMembers.length > 0) {
+        await tx.anggotaKeluarga.deleteMany({
+          where: {
+            id: {
+              in: removedMembers.map((member) => member.id),
+            },
+          },
+        })
+      }
+
+      /*
+       * Update anggota lama dan buat anggota baru.
+       */
+      for (let index = 0; index < kk.anggota.length; index += 1) {
+        const member = kk.anggota[index]
+
+        const nikHash = hashIdentityNumber(member.nik)
         const nikEncrypted = encryptValue(member.nik)
 
-        return {
-          kkId: id,
-
+        const memberData = {
           noUrut: index + 1,
 
           nama: member.nama,
@@ -126,35 +200,49 @@ export const updateKKLocal = createServerFn({
           nikHash,
 
           nikCiphertext: nikEncrypted.ciphertext,
-
           nikIv: nikEncrypted.iv,
-
           nikAuthTag: nikEncrypted.authTag,
 
           jenisKelamin: member.jenisKelamin,
 
           tempatLahir: member.tempatLahir,
-
           tanggalLahir: member.tanggalLahir,
 
           agama: member.agama,
-
           pendidikan: member.pendidikan,
-
           pekerjaan: member.pekerjaan,
-
           golonganDarah: member.golonganDarah,
-        }
-      })
 
-      await tx.anggotaKeluarga.createMany({
-        data: anggotaData,
-      })
+          ayah: member.ayah,
+          ibu: member.ibu,
+          baptisAnak: member.baptisAnak,
+          sidiBaptisDewasa: member.sidiBaptisDewasa,
+          menikah: member.menikah,
+          domisili: member.domisili,
+        }
+
+        if (member.id !== undefined) {
+          await tx.anggotaKeluarga.update({
+            where: {
+              id: member.id,
+            },
+
+            data: memberData,
+          })
+        } else {
+          await tx.anggotaKeluarga.create({
+            data: {
+              kkId: id,
+              ...memberData,
+            },
+          })
+        }
+      }
 
       return {
         id,
 
-        memberCount: anggotaData.length,
+        memberCount: kk.anggota.length,
       }
     })
 

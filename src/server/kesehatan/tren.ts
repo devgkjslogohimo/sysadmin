@@ -25,6 +25,9 @@ export const getTrenKesehatan = createServerFn({
         {
           createdAt: 'asc',
         },
+        {
+          id: 'asc',
+        },
       ],
 
       select: {

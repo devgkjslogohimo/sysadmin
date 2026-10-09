@@ -38,6 +38,13 @@ export const getAnggotaDetail = createServerFn({
         pekerjaan: true,
         golonganDarah: true,
 
+        ayah: true,
+        ibu: true,
+        baptisAnak: true,
+        sidiBaptisDewasa: true,
+        menikah: true,
+        domisili: true,
+
         kk: {
           select: {
             kepalaKeluarga: true,
@@ -95,5 +102,12 @@ export const getAnggotaDetail = createServerFn({
       kabupatenKota: anggota.kk.kabupatenKota,
       kodePos: anggota.kk.kodePos,
       provinsi: anggota.kk.provinsi,
+
+      ayah: anggota.ayah,
+      ibu: anggota.ibu,
+      baptisAnak: anggota.baptisAnak,
+      sidiBaptisDewasa: anggota.sidiBaptisDewasa,
+      menikah: anggota.menikah,
+      domisili: anggota.domisili,
     }
   })

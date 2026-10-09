@@ -1,6 +1,7 @@
 import {
   Database,
   FileJson2,
+  FileSpreadsheet,
   HeartPulse,
   Home,
   KeyRound,
@@ -100,6 +101,11 @@ export function SiteFooter() {
                       <FileJson2 className="size-4" />
                       Parser KK
                     </FooterLink>
+
+                    <FooterLink to="/fitur/import-excel">
+                      <FileSpreadsheet className="size-4" />
+                      Import Excel
+                    </FooterLink>
                   </>
                 ) : (
                   <>
@@ -136,6 +142,7 @@ type FooterLinkProps = {
     | '/data-anggota'
     | '/event-kesehatan'
     | '/fitur/parser-kk'
+    | '/fitur/import-excel'
     | '/akun'
 
   children: ReactNode

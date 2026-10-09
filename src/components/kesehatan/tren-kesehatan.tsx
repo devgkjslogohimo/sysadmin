@@ -42,12 +42,10 @@ export function TrenKesehatan({ anggotaId }: Props) {
         if (!cancelled) {
           setData(result)
         }
-      } catch (error) {
+      } catch (err) {
         if (!cancelled) {
           setError(
-            error instanceof Error
-              ? error.message
-              : 'Gagal memuat tren kesehatan.',
+            err instanceof Error ? err.message : 'Gagal memuat tren kesehatan.',
           )
         }
       } finally {
@@ -453,7 +451,7 @@ function TrendChart({
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          className="min-w-[620px] w-full"
+          className="min-w-155 w-full"
           role="img"
           aria-label={`Grafik ${series.map((item) => item.label).join(', ')}`}
         >

@@ -259,6 +259,7 @@ export const deleteEventKesehatan = createServerFn({
   .validator(eventKesehatanIdSchema)
   .handler(async ({ data }) => {
     await requireHealthAccess()
+
     const event = await db.eventKesehatan.findUnique({
       where: {
         id: data.id,
@@ -281,7 +282,7 @@ export const deleteEventKesehatan = createServerFn({
 
     if (event._count.pemeriksaan > 0) {
       throw new Error(
-        'Event yang sudah memiliki pemeriksaan tidak boleh dihapus. Tutup event sebagai gantinya.',
+        'Event yang sudah memiliki pemeriksaan tidak boleh dihapus karena data pemeriksaan harus tetap disimpan.',
       )
     }
 

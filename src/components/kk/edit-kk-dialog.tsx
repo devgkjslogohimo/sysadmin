@@ -73,6 +73,8 @@ function toFormValues(data: PrivateKKResponse['kk']): ValidatedKK {
     provinsi: data.provinsi,
 
     anggota: data.anggota.map((member, index) => ({
+      id: member.id,
+
       no: index + 1,
 
       nama: member.nama,
@@ -92,6 +94,13 @@ function toFormValues(data: PrivateKKResponse['kk']): ValidatedKK {
       pekerjaan: member.pekerjaan,
 
       golonganDarah: member.golonganDarah,
+
+      ayah: member.ayah,
+      ibu: member.ibu,
+      baptisAnak: member.baptisAnak,
+      sidiBaptisDewasa: member.sidiBaptisDewasa,
+      menikah: member.menikah,
+      domisili: member.domisili,
     })),
   }
 }

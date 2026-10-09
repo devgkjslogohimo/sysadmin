@@ -2,6 +2,7 @@ import {
   ChevronDown,
   Database,
   FileJson2,
+  FileSpreadsheet,
   HeartPulse,
   KeyRound,
   LogOut,
@@ -210,6 +211,27 @@ export function SiteNavbar() {
                         </div>
                       </Link>
                     </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild className="mt-1 rounded-lg p-0">
+                      <Link
+                        to="/fitur/import-excel"
+                        className="flex w-full items-start gap-3 px-3 py-2.5"
+                      >
+                        <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                          <FileSpreadsheet className="size-4" />
+                        </div>
+
+                        <div>
+                          <div className="text-sm font-medium text-slate-800">
+                            Import Excel
+                          </div>
+
+                          <div className="mt-0.5 text-xs text-slate-400">
+                            Import banyak data jemaat dari Excel
+                          </div>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
@@ -298,6 +320,15 @@ export function SiteNavbar() {
                     icon={<FileJson2 className="size-4" />}
                   >
                     Parser KK
+                  </MobileLink>
+
+                  <MobileLink
+                    to="/fitur/import-excel"
+                    active={pathname.startsWith('/fitur/import-excel')}
+                    onClick={closeMobileMenu}
+                    icon={<FileSpreadsheet className="size-4" />}
+                  >
+                    Import Excel
                   </MobileLink>
 
                   <MobileSection title="Administrator" />
@@ -395,6 +426,7 @@ type MobileLinkProps = {
     | '/fitur/parser-kk'
     | '/admin/users'
     | '/akun'
+    | '/fitur/import-excel'
 
   active: boolean
   onClick: () => void

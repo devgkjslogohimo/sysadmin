@@ -18,6 +18,27 @@ export const savePemeriksaanKesehatan = createServerFn({
   .validator(savePemeriksaanKesehatanSchema)
   .handler(async ({ data }) => {
     const currentUser = await requireHealthAccess()
+
+    const event = await db.eventKesehatan.findUnique({
+      where: {
+        id: data.eventId,
+      },
+      select: {
+        id: true,
+        isClosed: true,
+      },
+    })
+
+    if (!event) {
+      throw new Error('Event kesehatan tidak ditemukan.')
+    }
+
+    if (event.isClosed) {
+      throw new Error(
+        'Event ini sudah ditutup. Pemeriksaan baru tidak dapat ditambahkan.',
+      )
+    }
+
     const existing = await db.pemeriksaanKesehatan.findUnique({
       where: {
         eventId_anggotaId: {

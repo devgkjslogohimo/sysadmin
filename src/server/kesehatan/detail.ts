@@ -68,6 +68,20 @@ export const searchWargaKesehatan = createServerFn({
   .validator(searchWargaKesehatanSchema)
   .handler(async ({ data }) => {
     await requireHealthAccess()
+
+    const event = await db.eventKesehatan.findUnique({
+      where: {
+        id: data.eventId,
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    if (!event) {
+      throw new Error('Event kesehatan tidak ditemukan.')
+    }
+
     const q = data.q.trim()
 
     const digits = q.replace(/\D/g, '')

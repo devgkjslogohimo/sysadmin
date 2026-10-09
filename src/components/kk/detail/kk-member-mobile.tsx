@@ -83,6 +83,27 @@ export function KKMemberMobile({ member, nik, sensitiveVisible }: Props) {
         <div className="col-span-2">
           <MobileInfo label="Pekerjaan" value={member.pekerjaan} />
         </div>
+
+        <div className="col-span-2 mt-1 border-t border-slate-100 pt-4">
+          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">
+            Keluarga & Data Gerejawi
+          </div>
+        </div>
+
+        <MobileInfo label="Ayah" value={member.ayah} />
+
+        <MobileInfo label="Ibu" value={member.ibu} />
+
+        <MobileInfo label="Domisili" value={member.domisili} />
+
+        <MobileInfo label="Baptis Anak" value={member.baptisAnak} />
+
+        <MobileInfo
+          label="Sidi / Baptis Dewasa"
+          value={member.sidiBaptisDewasa}
+        />
+
+        <MobileInfo label="Menikah" value={member.menikah} />
       </div>
     </article>
   )

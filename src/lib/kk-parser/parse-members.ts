@@ -288,6 +288,13 @@ function parseMemberBlock(block: string[], no: number): KKMember | null {
     pekerjaan,
 
     golonganDarah,
+
+    ayah: null,
+    ibu: null,
+    baptisAnak: null,
+    sidiBaptisDewasa: null,
+    menikah: null,
+    domisili: null,
   }
 }
 
@@ -433,6 +440,13 @@ function parseNikAnchoredMembers(lines: string[]): KKMember[] {
       pekerjaan: null,
 
       golonganDarah: null,
+
+      ayah: null,
+      ibu: null,
+      baptisAnak: null,
+      sidiBaptisDewasa: null,
+      menikah: null,
+      domisili: null,
     }
   })
 }

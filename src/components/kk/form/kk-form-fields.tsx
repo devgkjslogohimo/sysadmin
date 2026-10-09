@@ -53,6 +53,12 @@ type MemberTextFieldKey =
   | 'pendidikan'
   | 'pekerjaan'
   | 'golonganDarah'
+  | 'ayah'
+  | 'ibu'
+  | 'baptisAnak'
+  | 'sidiBaptisDewasa'
+  | 'menikah'
+  | 'domisili'
 
 type MemberTextFieldName = `anggota.${number}.${MemberTextFieldKey}`
 
@@ -361,6 +367,58 @@ function MemberCard({
             label="Golongan Darah"
             disabled={disabled}
           />
+        </div>
+
+        <div className="mt-5 border-t border-slate-100 pt-5">
+          <div className="mb-3">
+            <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+              Keluarga & Data Gerejawi
+            </div>
+          </div>
+
+          <div className="grid min-w-0 gap-x-4 gap-y-3 md:grid-cols-2 lg:grid-cols-3">
+            <TextField
+              control={control}
+              name={`anggota.${index}.ayah`}
+              label="Ayah"
+              disabled={disabled}
+            />
+
+            <TextField
+              control={control}
+              name={`anggota.${index}.ibu`}
+              label="Ibu"
+              disabled={disabled}
+            />
+
+            <TextField
+              control={control}
+              name={`anggota.${index}.domisili`}
+              label="Domisili"
+              disabled={disabled}
+            />
+
+            <TextField
+              control={control}
+              name={`anggota.${index}.baptisAnak`}
+              label="Baptis Anak"
+              disabled={disabled}
+            />
+
+            <TextField
+              control={control}
+              name={`anggota.${index}.sidiBaptisDewasa`}
+              label="Sidi / Baptis Dewasa"
+              disabled={disabled}
+            />
+
+            <TextField
+              control={control}
+              name={`anggota.${index}.menikah`}
+              label="Menikah"
+              disabled={disabled}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -82,6 +82,13 @@ export const getKKDetail = createServerFn({
             pekerjaan: true,
 
             golonganDarah: true,
+
+            ayah: true,
+            ibu: true,
+            baptisAnak: true,
+            sidiBaptisDewasa: true,
+            menikah: true,
+            domisili: true,
           },
         },
       },
@@ -130,6 +137,13 @@ export const getKKDetail = createServerFn({
         pekerjaan: member.pekerjaan,
 
         golonganDarah: member.golonganDarah,
+
+        ayah: member.ayah,
+        ibu: member.ibu,
+        baptisAnak: member.baptisAnak,
+        sidiBaptisDewasa: member.sidiBaptisDewasa,
+        menikah: member.menikah,
+        domisili: member.domisili,
       }
     })
 

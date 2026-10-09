@@ -9,6 +9,13 @@ export type KKMember = {
   pendidikan: string | null
   pekerjaan: string | null
   golonganDarah: string | null
+
+  ayah: string | null
+  ibu: string | null
+  baptisAnak: string | null
+  sidiBaptisDewasa: string | null
+  menikah: string | null
+  domisili: string | null
 }
 
 export type KKData = {

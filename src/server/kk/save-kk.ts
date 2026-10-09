@@ -50,6 +50,13 @@ export const saveKK = createServerFn({
         pekerjaan: member.pekerjaan,
 
         golonganDarah: member.golonganDarah,
+
+        ayah: member.ayah,
+        ibu: member.ibu,
+        baptisAnak: member.baptisAnak,
+        sidiBaptisDewasa: member.sidiBaptisDewasa,
+        menikah: member.menikah,
+        domisili: member.domisili,
       }
     })
 

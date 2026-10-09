@@ -117,7 +117,7 @@ export function EventKesehatanHeader({ event, onChanged }: Props) {
   return (
     <>
       <section className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="h-1 bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400" />
+        <div className="h-1 bg-linear-to-r from-blue-600 via-blue-500 to-sky-400" />
 
         <div className="p-5 sm:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
