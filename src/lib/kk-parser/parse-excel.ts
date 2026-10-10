@@ -171,7 +171,7 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
      * Pada format Excel, kolom Keluarga boleh hanya
      * diisi pada baris pertama keluarga.
      */
-    const familyCell = textValue(cell(row, 'Keluarga'))
+    const familyCell = uppercaseText(cell(row, 'Keluarga')) ?? ''
 
     if (familyCell) {
       currentFamilyKey = familyCell
@@ -189,48 +189,55 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
       keluarga: familyCell || currentFamilyKey || '',
 
       nomor: textValue(cell(row, 'Nomor')),
-      nama: textValue(cell(row, 'Nama')),
+
+      nama: requiredUppercaseText(cell(row, 'Nama')),
 
       noKK: textValue(cell(row, 'No KK')),
+
       nik: textValue(cell(row, 'NIK')),
 
-      alamat: textValue(cell(row, 'Alamat')),
+      alamat: uppercaseText(cell(row, 'Alamat')) ?? '',
+
       rtRw: textValue(cell(row, 'RT/RW')),
 
-      desaKelurahan: textValue(cell(row, 'Desa/Kelurahan')),
+      desaKelurahan: uppercaseText(cell(row, 'Desa/Kelurahan')) ?? '',
 
-      kecamatan: textValue(cell(row, 'Kecamatan')),
+      kecamatan: uppercaseText(cell(row, 'Kecamatan')) ?? '',
 
-      kabupatenKota: textValue(cell(row, 'Kabupaten/Kota')),
+      kabupatenKota: uppercaseText(cell(row, 'Kabupaten/Kota')) ?? '',
 
-      provinsi: textValue(cell(row, 'Provinsi')),
+      provinsi: uppercaseText(cell(row, 'Provinsi')) ?? '',
 
       kodePos: textValue(cell(row, 'Kode Pos')),
 
-      jenisKelamin: textValue(cell(row, 'L/P')),
+      jenisKelamin:
+        genderValue(cell(row, 'L/P')) ??
+        textValue(cell(row, 'L/P')).toLocaleUpperCase('id-ID'),
 
-      tempatLahir: textValue(cell(row, 'Tempat Lahir')),
+      tempatLahir: uppercaseText(cell(row, 'Tempat Lahir')) ?? '',
 
       tanggalLahir: dateOrText(cell(row, 'Tanggal Lahir')) ?? '',
 
-      agama: textValue(cell(row, 'Agama')),
+      agama: uppercaseText(cell(row, 'Agama')) ?? '',
 
-      pendidikan: textValue(cell(row, 'Pendidikan')),
+      pendidikan: uppercaseText(cell(row, 'Pendidikan')) ?? '',
 
-      pekerjaan: textValue(cell(row, 'Pekerjaan')),
+      pekerjaan: uppercaseText(cell(row, 'Pekerjaan')) ?? '',
 
-      ayah: textValue(cell(row, 'Ayah')),
-      ibu: textValue(cell(row, 'Ibu')),
+      golonganDarah: uppercaseText(cell(row, 'Golongan Darah')) ?? '',
 
-      baptisAnak: dateOrText(cell(row, 'Baptis Anak')) ?? '',
+      ayah: uppercaseText(cell(row, 'Ayah')) ?? '',
 
-      sidiBaptisDewasa: dateOrText(cell(row, 'Sidi/Baptis Dewasa')) ?? '',
+      ibu: uppercaseText(cell(row, 'Ibu')) ?? '',
 
-      menikah: dateOrText(cell(row, 'Menikah')) ?? '',
+      baptisAnak: dateOrUppercaseText(cell(row, 'Baptis Anak')) ?? '',
 
-      domisili: textValue(cell(row, 'Domisili')),
+      sidiBaptisDewasa:
+        dateOrUppercaseText(cell(row, 'Sidi/Baptis Dewasa')) ?? '',
 
-      golonganDarah: textValue(cell(row, 'Golongan Darah')),
+      menikah: dateOrUppercaseText(cell(row, 'Menikah')) ?? '',
+
+      domisili: uppercaseText(cell(row, 'Domisili')) ?? '',
     })
 
     /*
@@ -294,7 +301,7 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
     /*
      * ALAMAT
      */
-    const alamat = nullableText(cell(row, 'Alamat'))
+    const alamat = uppercaseText(cell(row, 'Alamat'))
 
     if (alamat) {
       if (family.alamat && family.alamat !== alamat) {
@@ -319,25 +326,25 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
       family.rw = rtRw.rw
     }
 
-    const desaKelurahan = nullableText(cell(row, 'Desa/Kelurahan'))
+    const desaKelurahan = uppercaseText(cell(row, 'Desa/Kelurahan'))
 
     if (desaKelurahan) {
       family.desaKelurahan = desaKelurahan
     }
 
-    const kecamatan = nullableText(cell(row, 'Kecamatan'))
+    const kecamatan = uppercaseText(cell(row, 'Kecamatan'))
 
     if (kecamatan) {
       family.kecamatan = kecamatan
     }
 
-    const kabupatenKota = nullableText(cell(row, 'Kabupaten/Kota'))
+    const kabupatenKota = uppercaseText(cell(row, 'Kabupaten/Kota'))
 
     if (kabupatenKota) {
       family.kabupatenKota = kabupatenKota
     }
 
-    const provinsi = nullableText(cell(row, 'Provinsi'))
+    const provinsi = uppercaseText(cell(row, 'Provinsi'))
 
     if (provinsi) {
       family.provinsi = provinsi
@@ -363,7 +370,7 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
     /*
      * NAMA
      */
-    const nama = textValue(cell(row, 'Nama'))
+    const nama = requiredUppercaseText(cell(row, 'Nama'))
 
     if (!nama) {
       errors.push(`Baris ${excelRowNumber}: Nama anggota tidak boleh kosong.`)
@@ -417,28 +424,29 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
 
       jenisKelamin,
 
-      tempatLahir: nullableText(cell(row, 'Tempat Lahir')),
+      tempatLahir: uppercaseText(cell(row, 'Tempat Lahir')),
 
       tanggalLahir: dateOrText(cell(row, 'Tanggal Lahir')),
 
-      agama: nullableText(cell(row, 'Agama')),
+      agama: uppercaseText(cell(row, 'Agama')),
 
-      pendidikan: nullableText(cell(row, 'Pendidikan')),
+      pendidikan: uppercaseText(cell(row, 'Pendidikan')),
 
-      pekerjaan: nullableText(cell(row, 'Pekerjaan')),
-      golonganDarah: nullableText(cell(row, 'Golongan Darah')),
+      pekerjaan: uppercaseText(cell(row, 'Pekerjaan')),
 
-      ayah: nullableText(cell(row, 'Ayah')),
+      golonganDarah: uppercaseText(cell(row, 'Golongan Darah')),
 
-      ibu: nullableText(cell(row, 'Ibu')),
+      ayah: uppercaseText(cell(row, 'Ayah')),
 
-      baptisAnak: dateOrText(cell(row, 'Baptis Anak')),
+      ibu: uppercaseText(cell(row, 'Ibu')),
 
-      sidiBaptisDewasa: dateOrText(cell(row, 'Sidi/Baptis Dewasa')),
+      baptisAnak: dateOrUppercaseText(cell(row, 'Baptis Anak')),
 
-      menikah: dateOrText(cell(row, 'Menikah')),
+      sidiBaptisDewasa: dateOrUppercaseText(cell(row, 'Sidi/Baptis Dewasa')),
 
-      domisili: nullableText(cell(row, 'Domisili')),
+      menikah: dateOrUppercaseText(cell(row, 'Menikah')),
+
+      domisili: uppercaseText(cell(row, 'Domisili')),
     })
   }
 
@@ -471,7 +479,9 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
       rw: family.rw,
 
       desaKelurahan: family.desaKelurahan,
+
       kecamatan: family.kecamatan,
+
       kabupatenKota: family.kabupatenKota,
 
       kodePos: family.kodePos,
@@ -523,6 +533,16 @@ function nullableText(value: ExcelValue): string | null {
   return text || null
 }
 
+function uppercaseText(value: ExcelValue): string | null {
+  const text = nullableText(value)
+
+  return text ? text.toLocaleUpperCase('id-ID') : null
+}
+
+function requiredUppercaseText(value: ExcelValue): string {
+  return textValue(value).toLocaleUpperCase('id-ID')
+}
+
 function identityValue(
   value: ExcelValue,
   label: 'NIK' | 'No KK',
@@ -532,14 +552,16 @@ function identityValue(
   }
 
   /*
-   * Excel hanya menjamin sekitar 15 digit signifikan.
+   * NIK / No KK harus diperlakukan
+   * sebagai identitas, bukan angka hitung.
    *
-   * Jadi NIK / No KK 16 digit tidak boleh disimpan
-   * sebagai Number karena dapat berubah.
+   * Excel hanya menjamin sekitar 15 digit
+   * signifikan sehingga identitas 16 digit
+   * wajib disimpan sebagai Text.
    */
   if (typeof value === 'number') {
-    if (!Number.isInteger(value)) {
-      throw new Error(`${label} tidak valid.`)
+    if (!Number.isInteger(value) || !Number.isSafeInteger(value)) {
+      throw new Error(`${label} 16 digit harus diformat sebagai Text di Excel.`)
     }
 
     const text = String(value)
@@ -567,7 +589,7 @@ function positiveInteger(value: ExcelValue): number | null {
 }
 
 function genderValue(value: ExcelValue): 'LAKI-LAKI' | 'PEREMPUAN' | null {
-  const normalized = textValue(value).toUpperCase()
+  const normalized = textValue(value).toLocaleUpperCase('id-ID')
 
   if (
     normalized === 'L' ||
@@ -584,6 +606,20 @@ function genderValue(value: ExcelValue): 'LAKI-LAKI' | 'PEREMPUAN' | null {
   return null
 }
 
+/*
+ * Field tanggal biasa.
+ *
+ * Jika Excel menghasilkan objek Date,
+ * ubah ke DD-MM-YYYY.
+ *
+ * Jika teks berbentuk:
+ * 1/2/2020
+ * 1-2-2020
+ * 1.2.2020
+ *
+ * juga dinormalisasi menjadi:
+ * 01-02-2020
+ */
 function dateOrText(value: ExcelValue): string | null {
   if (value === null || value === undefined || value === '') {
     return null
@@ -602,10 +638,49 @@ function dateOrText(value: ExcelValue): string | null {
   }
 
   const day = match[1].padStart(2, '0')
+
   const month = match[2].padStart(2, '0')
+
   const year = match[3]
 
   return `${day}-${month}-${year}`
+}
+
+/*
+ * Khusus field yang bisa berisi tanggal
+ * ATAU teks, misalnya:
+ *
+ * Baptis Anak
+ * Sidi/Baptis Dewasa
+ * Menikah
+ *
+ * Tanggal tetap dipertahankan sebagai tanggal,
+ * sedangkan teks dibuat CAPITAL.
+ */
+function dateOrUppercaseText(value: ExcelValue): string | null {
+  if (value === null || value === undefined || value === '') {
+    return null
+  }
+
+  if (value instanceof Date) {
+    return formatDate(value)
+  }
+
+  const text = String(value).trim()
+
+  const match = text.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/)
+
+  if (match) {
+    const day = match[1].padStart(2, '0')
+
+    const month = match[2].padStart(2, '0')
+
+    const year = match[3]
+
+    return `${day}-${month}-${year}`
+  }
+
+  return text ? text.toLocaleUpperCase('id-ID') : null
 }
 
 function formatDate(date: Date): string {
