@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { GEREJA_OPTIONS } from '@/lib/gereja'
 
 const nullableText = z.string().trim().nullable()
 
@@ -23,6 +24,7 @@ export const kkMemberSchema = z.object({
     .nullable(),
 
   agama: nullableText,
+  gereja: z.enum(GEREJA_OPTIONS).nullable().optional(),
   pendidikan: nullableText,
   pekerjaan: nullableText,
   golonganDarah: nullableText,

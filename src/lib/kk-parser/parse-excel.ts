@@ -1,6 +1,7 @@
 import type { KKData, KKMember } from './types'
 
 import { kkSchema } from './schema'
+import { GEREJA_OPTIONS, normalizeGereja } from '../gereja'
 
 type ExcelValue = string | number | boolean | Date | null | undefined
 type ExcelRow = ExcelValue[]
@@ -37,7 +38,7 @@ const REQUIRED_HEADERS = [
   'Domisili',
 ] as const
 
-type HeaderName = (typeof REQUIRED_HEADERS)[number]
+type HeaderName = (typeof REQUIRED_HEADERS)[number] | 'Gereja'
 
 type FamilyBuffer = {
   key: string
@@ -80,6 +81,7 @@ export type ExcelPreviewRow = {
   tanggalLahir: string
 
   agama: string
+  gereja: string
   pendidikan: string
   pekerjaan: string
   golonganDarah: string
@@ -165,6 +167,16 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
       continue
     }
 
+    const rawGereja = textValue(cell(row, 'Gereja'))
+    const gereja = normalizeGereja(rawGereja)
+
+    if (gereja === undefined) {
+      errors.push(
+        `Baris ${excelRowNumber}: Gereja "${rawGereja}" tidak valid. ` +
+          `Pilihan: ${GEREJA_OPTIONS.join(', ')}.`,
+      )
+    }
+
     /*
      * Tentukan keluarga aktif.
      *
@@ -219,6 +231,8 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
       tanggalLahir: dateOrText(cell(row, 'Tanggal Lahir')) ?? '',
 
       agama: uppercaseText(cell(row, 'Agama')) ?? '',
+
+      gereja: rawGereja,
 
       pendidikan: uppercaseText(cell(row, 'Pendidikan')) ?? '',
 
@@ -429,6 +443,8 @@ export async function parseKKExcel(file: File): Promise<ExcelKKImportResult> {
       tanggalLahir: dateOrText(cell(row, 'Tanggal Lahir')),
 
       agama: uppercaseText(cell(row, 'Agama')),
+
+      gereja: gereja ?? null,
 
       pendidikan: uppercaseText(cell(row, 'Pendidikan')),
 

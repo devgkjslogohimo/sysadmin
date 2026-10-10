@@ -111,6 +111,9 @@ export function buildAnggotaWhere(
     case 'alamat':
       return buildAlamatWhere(q)
 
+    case 'gereja':
+      return buildGerejaWhere(q)
+
     case 'all':
     default: {
       const conditions: Prisma.AnggotaKeluargaWhereInput[] = [
@@ -159,10 +162,22 @@ export function buildAnggotaOrderBy(
         createdAt: sortOrder,
       }
 
+    case 'gereja':
+      return { gereja: sortOrder }
+
     case 'nama':
     default:
       return {
         nama: sortOrder,
       }
+  }
+}
+
+function buildGerejaWhere(q: string): Prisma.AnggotaKeluargaWhereInput {
+  return {
+    gereja: {
+      contains: q,
+      mode: 'insensitive',
+    },
   }
 }

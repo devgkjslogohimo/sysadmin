@@ -69,6 +69,14 @@ export const anggotaColumns: ColumnDef<AnggotaListItem>[] = [
   },
 
   {
+    accessorKey: 'gereja',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Gereja" />
+    ),
+    cell: ({ row }) => row.original.gereja ?? '-',
+  },
+
+  {
     accessorKey: 'jenisKelamin',
 
     enableSorting: false,

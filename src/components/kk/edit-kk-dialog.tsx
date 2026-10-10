@@ -23,6 +23,7 @@ import { getKKPrivateLocal, updateKKLocal } from '@/server/kk.local.functions'
 import { createEmptyKK, normalizeKKFormValues } from './form/kk-form-defaults'
 
 import { KKFormFields } from './form/kk-form-fields'
+import { normalizeGereja } from '#/lib/gereja'
 
 type Props = {
   id: number
@@ -88,6 +89,8 @@ function toFormValues(data: PrivateKKResponse['kk']): ValidatedKK {
       tanggalLahir: member.tanggalLahir,
 
       agama: member.agama,
+
+      gereja: normalizeGereja(member.gereja) ?? null,
 
       pendidikan: member.pendidikan,
 
@@ -303,7 +306,16 @@ export function EditKKDialog({ id, open, onOpenChange, onSaved }: Props) {
             className="flex min-h-0 flex-1 flex-col"
           >
             {/* SCROLL AREA */}
-            <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/40">
+            <div
+              className="
+    min-h-0
+    flex-1
+    overflow-x-hidden
+    overflow-y-auto
+    overscroll-contain
+    bg-slate-50
+  "
+            >
               <div className="p-4 sm:p-6">
                 <KKFormFields form={form} disabled={disabled} />
               </div>

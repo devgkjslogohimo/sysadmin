@@ -1,6 +1,12 @@
 import { z } from 'zod'
 
-export const anggotaSearchBySchema = z.enum(['all', 'nama', 'nik', 'alamat'])
+export const anggotaSearchBySchema = z.enum([
+  'all',
+  'nama',
+  'nik',
+  'alamat',
+  'gereja',
+])
 
 export const anggotaIdSchema = z.object({
   id: z.number().int().positive(),
@@ -18,7 +24,7 @@ export const listAnggotaSchema = z.object({
   searchBy: anggotaSearchBySchema.default('all'),
 
   sortBy: z
-    .enum(['nama', 'kepalaKeluarga', 'alamat', 'createdAt'])
+    .enum(['nama', 'kepalaKeluarga', 'alamat', 'gereja', 'createdAt'])
     .default('nama'),
 
   sortOrder: z.enum(['asc', 'desc']).default('asc'),

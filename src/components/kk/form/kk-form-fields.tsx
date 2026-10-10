@@ -23,6 +23,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+import { GEREJA_OPTIONS } from '@/lib/gereja'
+
 import type { ValidatedKK } from '@/lib/kk-parser/schema'
 
 import { createEmptyMember } from './kk-form-defaults'
@@ -377,6 +379,12 @@ function MemberCard({
           </div>
 
           <div className="grid min-w-0 gap-x-4 gap-y-3 md:grid-cols-2 lg:grid-cols-3">
+            <GerejaField
+              control={control}
+              name={`anggota.${index}.gereja`}
+              disabled={disabled}
+            />
+
             <TextField
               control={control}
               name={`anggota.${index}.ayah`}
@@ -536,6 +544,62 @@ function GenderField({
               <SelectItem value="PEREMPUAN">PEREMPUAN</SelectItem>
             </SelectContent>
           </Select>
+
+          {fieldState.error && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
+    />
+  )
+}
+
+function GerejaField({
+  control,
+  name,
+  disabled,
+}: {
+  control: Control<ValidatedKK>
+  name: `anggota.${number}.gereja`
+  disabled: boolean
+}) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <Field className="min-w-0 gap-1.5" data-invalid={fieldState.invalid}>
+          <FieldLabel>Gereja</FieldLabel>
+
+          <Select
+            value={field.value ?? ''}
+            disabled={disabled}
+            onValueChange={(value) => {
+              if (GEREJA_OPTIONS.some((gereja) => gereja === value)) {
+                field.onChange(value)
+              }
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Pilih gereja" />
+            </SelectTrigger>
+
+            <SelectContent>
+              {GEREJA_OPTIONS.map((gereja) => (
+                <SelectItem key={gereja} value={gereja}>
+                  {gereja}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {!disabled && field.value && (
+            <button
+              type="button"
+              className="text-left text-xs text-slate-500 hover:underline"
+              onClick={() => field.onChange(null)}
+            >
+              Kosongkan pilihan
+            </button>
+          )}
 
           {fieldState.error && <FieldError errors={[fieldState.error]} />}
         </Field>

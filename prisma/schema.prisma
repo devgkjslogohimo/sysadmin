@@ -57,6 +57,7 @@ model AnggotaKeluarga {
   tanggalLahir String? @map("tanggal_lahir")
 
   agama         String?
+  gereja        String?
   pendidikan    String?
   pekerjaan     String?
   golonganDarah String? @map("golongan_darah")

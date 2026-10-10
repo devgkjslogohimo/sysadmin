@@ -9,6 +9,7 @@ export function createEmptyMember(no: number): ValidatedKK['anggota'][number] {
     tempatLahir: null,
     tanggalLahir: null,
     agama: null,
+    gereja: null,
     pendidikan: null,
     pekerjaan: null,
     golonganDarah: null,

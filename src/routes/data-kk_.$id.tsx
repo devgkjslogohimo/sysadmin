@@ -2,9 +2,6 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 
 import { ShieldCheck, TriangleAlert } from 'lucide-react'
 
-import { useState } from 'react'
-
-import { EditKKDialog } from '@/components/kk/edit-kk-dialog'
 import { KKDetailHeader } from '@/components/kk/detail/kk-detail-header'
 import { KKInfoCard } from '@/components/kk/detail/kk-info-card'
 import { KKMembersCard } from '@/components/kk/detail/kk-members-card'
@@ -36,15 +33,7 @@ function KKDetailPage() {
 
   const router = useRouter()
 
-  const [editOpen, setEditOpen] = useState(false)
-
   const sensitive = useSensitiveKK(data.id)
-
-  async function handleSaved() {
-    sensitive.hide()
-
-    await router.invalidate()
-  }
 
   return (
     <main className="bg-slate-50/70">
@@ -56,7 +45,14 @@ function KKDetailPage() {
           jumlahAnggota={data.anggota.length}
           sensitiveVisible={sensitive.isVisible}
           sensitiveLoading={sensitive.isLoading}
-          onEdit={() => setEditOpen(true)}
+          onEdit={() => {
+            void router.navigate({
+              to: '/data-kk/$id/edit',
+              params: {
+                id: String(data.id),
+              },
+            })
+          }}
           onToggleSensitive={sensitive.toggle}
         />
 
@@ -106,13 +102,6 @@ function KKDetailPage() {
           </span>
         </div>
       </div>
-
-      <EditKKDialog
-        id={data.id}
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        onSaved={handleSaved}
-      />
     </main>
   )
 }

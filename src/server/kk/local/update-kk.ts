@@ -206,6 +206,7 @@ export const updateKKLocal = createServerFn({
           tanggalLahir: member.tanggalLahir,
 
           agama: member.agama,
+          gereja: member.gereja ?? null,
           pendidikan: member.pendidikan,
           pekerjaan: member.pekerjaan,
           golonganDarah: member.golonganDarah,

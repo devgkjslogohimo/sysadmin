@@ -77,6 +77,8 @@ export const getKKDetail = createServerFn({
 
             agama: true,
 
+            gereja: true,
+
             pendidikan: true,
 
             pekerjaan: true,
@@ -132,6 +134,7 @@ export const getKKDetail = createServerFn({
 
         agama: member.agama,
 
+        gereja: member.gereja,
         pendidikan: member.pendidikan,
 
         pekerjaan: member.pekerjaan,

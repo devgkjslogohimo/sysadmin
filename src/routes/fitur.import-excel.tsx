@@ -294,6 +294,7 @@ function ImportExcelPage() {
                       <Head>Tempat Lahir</Head>
                       <Head>Tanggal Lahir</Head>
                       <Head>Agama</Head>
+                      <Head>Gereja</Head>
                       <Head>Pendidikan</Head>
                       <Head>Pekerjaan</Head>
                       <Head>Golongan Darah</Head>
@@ -359,6 +360,7 @@ function ImportExcelPage() {
                         <Cell>{row.tempatLahir || '-'}</Cell>
                         <Cell>{row.tanggalLahir || '-'}</Cell>
                         <Cell>{row.agama || '-'}</Cell>
+                        <Cell>{row.gereja || '-'}</Cell>
                         <Cell>{row.pendidikan || '-'}</Cell>
                         <Cell>{row.pekerjaan || '-'}</Cell>
                         <Cell>{row.golonganDarah || '-'}</Cell>

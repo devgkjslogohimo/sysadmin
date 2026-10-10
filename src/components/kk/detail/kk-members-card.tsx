@@ -124,6 +124,10 @@ function DesktopMembersTable({ members, sensitiveVisible, getNik }: Props) {
               Agama
             </TableHead>
 
+            <TableHead className="min-w-60 text-xs font-semibold text-slate-500">
+              Gereja
+            </TableHead>
+
             <TableHead className="min-w-52.5 text-xs font-semibold text-slate-500">
               Pendidikan
             </TableHead>
@@ -218,6 +222,10 @@ function DesktopMembersTable({ members, sensitiveVisible, getNik }: Props) {
 
               <TableCell className="text-sm text-slate-700">
                 {member.agama ?? '-'}
+              </TableCell>
+
+              <TableCell className="min-w-60 text-sm text-slate-700">
+                {member.gereja ?? '-'}
               </TableCell>
 
               <TableCell className="max-w-65 text-sm text-slate-700">

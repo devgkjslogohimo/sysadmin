@@ -21,6 +21,12 @@ export const anggotaSearchOptions: DataTableSearchOption[] = [
     label: 'Alamat',
     placeholder: 'Cari alamat, desa atau kecamatan...',
   },
+
+  {
+    value: 'gereja',
+    label: 'Gereja',
+    placeholder: 'Cari nama gereja...',
+  },
 ]
 
 export const anggotaColumnLabels: Partial<Record<string, string>> = {
@@ -35,4 +41,6 @@ export const anggotaColumnLabels: Partial<Record<string, string>> = {
   alamat: 'Alamat',
 
   createdAt: 'Tanggal Dibuat',
+
+  gereja: 'Gereja',
 }

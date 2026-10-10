@@ -19,9 +19,11 @@ import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as DataAnggotaIdRouteImport } from './routes/data-anggota_.$id'
 import { Route as DataKkIdRouteImport } from './routes/data-kk_.$id'
+import { Route as DataKkTambahRouteImport } from './routes/data-kk_.tambah'
 import { Route as EventKesehatanIdRouteImport } from './routes/event-kesehatan_.$id'
 import { Route as FiturImportExcelRouteImport } from './routes/fitur.import-excel'
 import { Route as FiturParserKkRouteImport } from './routes/fitur.parser-kk'
+import { Route as DataKkIdEditRouteImport } from './routes/data-kk_.$id_.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -73,6 +75,11 @@ const DataKkIdRoute = DataKkIdRouteImport.update({
   path: '/data-kk/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DataKkTambahRoute = DataKkTambahRouteImport.update({
+  id: '/data-kk_/tambah',
+  path: '/data-kk/tambah',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventKesehatanIdRoute = EventKesehatanIdRouteImport.update({
   id: '/event-kesehatan_/$id',
   path: '/event-kesehatan/$id',
@@ -88,6 +95,11 @@ const FiturParserKkRoute = FiturParserKkRouteImport.update({
   path: '/fitur/parser-kk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DataKkIdEditRoute = DataKkIdEditRouteImport.update({
+  id: '/data-kk_/$id_/edit',
+  path: '/data-kk/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -100,9 +112,11 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AdminUsersRoute
   '/data-anggota/$id': typeof DataAnggotaIdRoute
   '/data-kk/$id': typeof DataKkIdRoute
+  '/data-kk/tambah': typeof DataKkTambahRoute
   '/event-kesehatan/$id': typeof EventKesehatanIdRoute
   '/fitur/import-excel': typeof FiturImportExcelRoute
   '/fitur/parser-kk': typeof FiturParserKkRoute
+  '/data-kk/$id/edit': typeof DataKkIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -115,9 +129,11 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/data-anggota/$id': typeof DataAnggotaIdRoute
   '/data-kk/$id': typeof DataKkIdRoute
+  '/data-kk/tambah': typeof DataKkTambahRoute
   '/event-kesehatan/$id': typeof EventKesehatanIdRoute
   '/fitur/import-excel': typeof FiturImportExcelRoute
   '/fitur/parser-kk': typeof FiturParserKkRoute
+  '/data-kk/$id/edit': typeof DataKkIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -131,9 +147,11 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/data-anggota_/$id': typeof DataAnggotaIdRoute
   '/data-kk_/$id': typeof DataKkIdRoute
+  '/data-kk_/tambah': typeof DataKkTambahRoute
   '/event-kesehatan_/$id': typeof EventKesehatanIdRoute
   '/fitur/import-excel': typeof FiturImportExcelRoute
   '/fitur/parser-kk': typeof FiturParserKkRoute
+  '/data-kk_/$id_/edit': typeof DataKkIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -148,9 +166,11 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/data-anggota/$id'
     | '/data-kk/$id'
+    | '/data-kk/tambah'
     | '/event-kesehatan/$id'
     | '/fitur/import-excel'
     | '/fitur/parser-kk'
+    | '/data-kk/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -163,9 +183,11 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/data-anggota/$id'
     | '/data-kk/$id'
+    | '/data-kk/tambah'
     | '/event-kesehatan/$id'
     | '/fitur/import-excel'
     | '/fitur/parser-kk'
+    | '/data-kk/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -178,9 +200,11 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/data-anggota_/$id'
     | '/data-kk_/$id'
+    | '/data-kk_/tambah'
     | '/event-kesehatan_/$id'
     | '/fitur/import-excel'
     | '/fitur/parser-kk'
+    | '/data-kk_/$id_/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -194,9 +218,11 @@ export interface RootRouteChildren {
   AdminUsersRoute: typeof AdminUsersRoute
   DataAnggotaIdRoute: typeof DataAnggotaIdRoute
   DataKkIdRoute: typeof DataKkIdRoute
+  DataKkTambahRoute: typeof DataKkTambahRoute
   EventKesehatanIdRoute: typeof EventKesehatanIdRoute
   FiturImportExcelRoute: typeof FiturImportExcelRoute
   FiturParserKkRoute: typeof FiturParserKkRoute
+  DataKkIdEditRoute: typeof DataKkIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -271,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataKkIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/data-kk_/tambah': {
+      id: '/data-kk_/tambah'
+      path: '/data-kk/tambah'
+      fullPath: '/data-kk/tambah'
+      preLoaderRoute: typeof DataKkTambahRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/event-kesehatan_/$id': {
       id: '/event-kesehatan_/$id'
       path: '/event-kesehatan/$id'
@@ -292,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FiturParserKkRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/data-kk_/$id_/edit': {
+      id: '/data-kk_/$id_/edit'
+      path: '/data-kk/$id/edit'
+      fullPath: '/data-kk/$id/edit'
+      preLoaderRoute: typeof DataKkIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -306,9 +346,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminUsersRoute: AdminUsersRoute,
   DataAnggotaIdRoute: DataAnggotaIdRoute,
   DataKkIdRoute: DataKkIdRoute,
+  DataKkTambahRoute: DataKkTambahRoute,
   EventKesehatanIdRoute: EventKesehatanIdRoute,
   FiturImportExcelRoute: FiturImportExcelRoute,
   FiturParserKkRoute: FiturParserKkRoute,
+  DataKkIdEditRoute: DataKkIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

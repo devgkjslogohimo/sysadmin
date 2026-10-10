@@ -1,7 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
-import { CreateKKDialog } from '@/components/kk/create/create-kk-dialog'
 import { KKParserHeader } from '@/components/kk/parser/kk-parser-header'
 import { ParserInputCard } from '@/components/kk/parser/parser-input-card'
 import { ParserPreviewCard } from '@/components/kk/parser/parser-preview-card'
@@ -18,13 +16,17 @@ export const Route = createFileRoute('/fitur/parser-kk')({
 function ParserKKPage() {
   const parser = useKKParser()
 
-  const [createOpen, setCreateOpen] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <main className="bg-slate-50/70">
       <div className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
         {/* HEADER */}
-        <KKParserHeader onAddManual={() => setCreateOpen(true)} />
+        <KKParserHeader
+          onAddManual={() => {
+            void navigate({ to: '/data-kk/tambah' })
+          }}
+        />
         {/* PRIVACY */}
         <div className="mb-6">
           <PrivacyNotice />
@@ -71,14 +73,6 @@ function ParserKKPage() {
           </section>
         )}
       </div>
-
-      <CreateKKDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        onCreated={() => {
-          setCreateOpen(false)
-        }}
-      />
     </main>
   )
 }

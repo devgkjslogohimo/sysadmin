@@ -60,6 +60,8 @@ export const listAnggota = createServerFn({
 
         agama: true,
 
+        gereja: true,
+
         pekerjaan: true,
 
         createdAt: true,
@@ -114,6 +116,8 @@ export const listAnggota = createServerFn({
           tanggalLahir: row.tanggalLahir,
 
           agama: row.agama,
+
+          gereja: row.gereja,
 
           pekerjaan: row.pekerjaan,
 

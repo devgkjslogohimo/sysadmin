@@ -25,11 +25,8 @@ import { KKFormFields } from '../form/kk-form-fields'
 
 type Props = {
   open: boolean
-
   onOpenChange: (open: boolean) => void
-
   onCreated?: () => void | Promise<void>
-
   initialValues?: ValidatedKK | null
 }
 
@@ -41,21 +38,17 @@ export function CreateKKDialog({
 }: Props) {
   const form = useForm<ValidatedKK>({
     resolver: zodResolver(kkSchema),
-
     defaultValues: createEmptyKK(),
   })
 
   const {
     reset,
     handleSubmit,
-
     formState: { isSubmitting },
   } = form
 
   useEffect(() => {
-    if (!open) {
-      return
-    }
+    if (!open) return
 
     reset(initialValues ?? createEmptyKK())
   }, [open, initialValues, reset])
@@ -65,9 +58,7 @@ export function CreateKKDialog({
   }
 
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen && isSubmitting) {
-      return
-    }
+    if (!nextOpen && isSubmitting) return
 
     onOpenChange(nextOpen)
   }
@@ -87,7 +78,6 @@ export function CreateKKDialog({
       })
 
       resetForm()
-
       onOpenChange(false)
 
       await onCreated?.()
@@ -106,9 +96,18 @@ export function CreateKKDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
+        style={{
+          top: '4svh',
+          left: 0,
+          right: 0,
+          translate: 'none',
+          transform: 'none',
+        }}
         className="
+          mx-auto
           flex
-          max-h-[92dvh]
+          h-[92svh]
+          max-h-[92svh]
           w-[calc(100vw-1.5rem)]
           max-w-[calc(100vw-1.5rem)]
           flex-col
@@ -121,21 +120,62 @@ export function CreateKKDialog({
           shadow-xl
           sm:w-[calc(100vw-3rem)]
           sm:max-w-5xl
+          data-open:animate-none
+          data-closed:animate-none
         "
       >
         {/* HEADER */}
-        <DialogHeader className="shrink-0 border-b border-slate-200 bg-white px-5 py-4 pr-12 sm:px-6 sm:py-5">
+        <DialogHeader
+          className="
+            shrink-0
+            border-b
+            border-slate-200
+            bg-white
+            px-5
+            py-4
+            pr-12
+            sm:px-6
+            sm:py-5
+          "
+        >
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+            <div
+              className="
+                flex
+                size-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-blue-50
+                text-blue-600
+              "
+            >
               <IdCard className="size-4" />
             </div>
 
             <div className="min-w-0">
-              <DialogTitle className="text-base font-semibold text-slate-900 sm:text-lg">
+              <DialogTitle
+                className="
+                  text-base
+                  font-semibold
+                  text-slate-900
+                  sm:text-lg
+                "
+              >
                 Tambah Kartu Keluarga
               </DialogTitle>
 
-              <DialogDescription className="mt-1 max-w-2xl text-xs leading-5 text-slate-500 sm:text-sm">
+              <DialogDescription
+                className="
+                  mt-1
+                  max-w-2xl
+                  text-xs
+                  leading-5
+                  text-slate-500
+                  sm:text-sm
+                "
+              >
                 Masukkan data Kartu Keluarga beserta anggota keluarga yang
                 terdaftar di dalamnya.
               </DialogDescription>
@@ -143,11 +183,19 @@ export function CreateKKDialog({
           </div>
         </DialogHeader>
 
-        {/* FORM AREA */}
+        {/* SCROLLABLE FORM */}
         <form
           id="create-kk-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/40"
+          className="
+            min-h-0
+            flex-1
+            overflow-x-hidden
+            overflow-y-auto
+            overscroll-contain
+            bg-slate-50
+            scrollbar-gutter-stable
+          "
         >
           <div className="p-4 sm:p-6">
             <KKFormFields form={form} disabled={isSubmitting} />
@@ -155,12 +203,44 @@ export function CreateKKDialog({
         </form>
 
         {/* FOOTER */}
-        <DialogFooter className="shrink-0 border-t border-slate-200 bg-white px-4 pt-4 pb-5 sm:px-6 sm:pt-4 sm:pb-6">
-          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <DialogFooter
+          className="
+            mx-0
+            mb-0
+            shrink-0
+            rounded-none
+            border-t
+            border-slate-200
+            bg-white
+            px-4
+            pt-4
+            pb-5
+            sm:px-6
+            sm:pt-4
+            sm:pb-6
+          "
+        >
+          <div
+            className="
+              flex
+              w-full
+              flex-col-reverse
+              gap-2
+              sm:flex-row
+              sm:justify-end
+            "
+          >
             <Button
               type="button"
               variant="outline"
-              className="h-10 rounded-lg border-slate-200 bg-white px-5 shadow-none"
+              className="
+                h-10
+                rounded-lg
+                border-slate-200
+                bg-white
+                px-5
+                shadow-none
+              "
               disabled={isSubmitting}
               onClick={() => handleOpenChange(false)}
             >
@@ -170,7 +250,12 @@ export function CreateKKDialog({
             <Button
               type="submit"
               form="create-kk-form"
-              className="h-10 rounded-lg px-5 sm:min-w-40"
+              className="
+                h-10
+                rounded-lg
+                px-5
+                sm:min-w-40
+              "
               disabled={isSubmitting}
             >
               {isSubmitting ? (

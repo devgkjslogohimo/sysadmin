@@ -33,7 +33,7 @@ import type { ListSearch } from '@/lib/list-search'
 
 import { listAnggota } from '@/server/anggota'
 
-const searchBy = ['all', 'nama', 'nik', 'alamat'] as const
+const searchBy = ['all', 'nama', 'nik', 'alamat', 'gereja'] as const
 
 const sortBy = ['nama', 'kepalaKeluarga', 'alamat', 'createdAt'] as const
 

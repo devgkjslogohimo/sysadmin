@@ -265,6 +265,12 @@ function DataAnggotaDetailPage() {
 
           <CardContent className="p-5 sm:p-6">
             <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+              <Info
+                label="Gereja"
+                value={anggota.gereja}
+                className="sm:col-span-2 lg:col-span-3"
+              />
+
               <Info label="Ayah" value={anggota.ayah} />
 
               <Info label="Ibu" value={anggota.ibu} />

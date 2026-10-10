@@ -34,6 +34,7 @@ export const getAnggotaDetail = createServerFn({
         tanggalLahir: true,
 
         agama: true,
+        gereja: true,
         pendidikan: true,
         pekerjaan: true,
         golonganDarah: true,
@@ -87,6 +88,7 @@ export const getAnggotaDetail = createServerFn({
       tanggalLahir: anggota.tanggalLahir,
 
       agama: anggota.agama,
+      gereja: anggota.gereja,
       pendidikan: anggota.pendidikan,
       pekerjaan: anggota.pekerjaan,
       golonganDarah: anggota.golonganDarah,

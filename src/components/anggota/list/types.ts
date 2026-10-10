@@ -14,6 +14,8 @@ export type AnggotaListItem = {
 
   agama: string | null
 
+  gereja: string | null
+
   pekerjaan: string | null
 
   kepalaKeluarga: string | null

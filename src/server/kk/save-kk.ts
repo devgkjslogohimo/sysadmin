@@ -44,7 +44,7 @@ export const saveKK = createServerFn({
         tanggalLahir: member.tanggalLahir,
 
         agama: member.agama,
-
+        gereja: member.gereja ?? null,
         pendidikan: member.pendidikan,
 
         pekerjaan: member.pekerjaan,

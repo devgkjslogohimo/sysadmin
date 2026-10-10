@@ -147,9 +147,9 @@ function DataKKPage() {
               className="h-10 w-full rounded-lg px-4 shadow-sm sm:w-auto"
               asChild
             >
-              <Link to="/fitur/parser-kk">
-                <FileJson2 className="size-4" />
-                Tambah Data
+              <Link to="/data-kk/tambah">
+                <UsersRound className="size-4" />
+                Tambah KK
               </Link>
             </Button>
           </>

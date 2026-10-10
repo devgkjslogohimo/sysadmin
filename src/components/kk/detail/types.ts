@@ -9,6 +9,7 @@ export type KKMemberView = {
   tanggalLahir: string | null
 
   agama: string | null
+  gereja: string | null
   pendidikan: string | null
   pekerjaan: string | null
   golonganDarah: string | null

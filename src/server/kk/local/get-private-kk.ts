@@ -72,6 +72,8 @@ export const getKKPrivateLocal = createServerFn({
 
             agama: true,
 
+            gereja: true,
+
             pendidikan: true,
 
             pekerjaan: true,
@@ -123,6 +125,8 @@ export const getKKPrivateLocal = createServerFn({
       tanggalLahir: member.tanggalLahir,
 
       agama: member.agama,
+
+      gereja: member.gereja,
 
       pendidikan: member.pendidikan,
 

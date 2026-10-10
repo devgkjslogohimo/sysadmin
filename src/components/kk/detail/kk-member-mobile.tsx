@@ -90,6 +90,10 @@ export function KKMemberMobile({ member, nik, sensitiveVisible }: Props) {
           </div>
         </div>
 
+        <div className="col-span-2">
+          <MobileInfo label="Gereja" value={member.gereja} />
+        </div>
+
         <MobileInfo label="Ayah" value={member.ayah} />
 
         <MobileInfo label="Ibu" value={member.ibu} />
