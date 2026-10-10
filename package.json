@@ -8,11 +8,12 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "generate-routes": "tsr generate",
-    "build": "vite build",
+    "build": "vite build && node scripts/copy-pwa-output.mjs",
     "preview": "vite preview",
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check .",
+    "generate:pwa-icons": "node scripts/generate-pwa-icons.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -59,8 +60,10 @@
     "eslint": "^9.20.0",
     "prettier": "^3.8.1",
     "prisma": "^7.10.0",
+    "sharp": "^0.35.5",
     "typescript": "^6.0.2",
-    "vite": "^8.0.0"
+    "vite": "^8.0.0",
+    "vite-plugin-pwa": "^2.0.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

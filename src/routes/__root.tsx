@@ -60,14 +60,60 @@ export const Route = createRootRoute({
       },
       {
         name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        content: 'width=device-width, initial-scale=1, viewport-fit=cover',
       },
       {
         title: 'Sistem Data Jemaat | GKJ Slogohimo',
       },
       {
         name: 'description',
-        content: 'Sistem pengelolaan data jemaat GKJ Slogohimo',
+        content:
+          'Sistem pengelolaan data jemaat GKJ Slogohimo untuk data keluarga, anggota, dan pelayanan kesehatan.',
+      },
+      {
+        name: 'application-name',
+        content: 'GKJ Slogohimo',
+      },
+      {
+        name: 'theme-color',
+        content: '#2563eb',
+      },
+      {
+        name: 'apple-mobile-web-app-capable',
+        content: 'yes',
+      },
+      {
+        name: 'apple-mobile-web-app-status-bar-style',
+        content: 'default',
+      },
+      {
+        name: 'apple-mobile-web-app-title',
+        content: 'GKJ Slogohimo',
+      },
+      {
+        name: 'mobile-web-app-capable',
+        content: 'yes',
+      },
+      {
+        property: 'og:title',
+        content: 'Sistem Data Jemaat | GKJ Slogohimo',
+      },
+      {
+        property: 'og:description',
+        content:
+          'Sistem pengelolaan data jemaat GKJ Slogohimo untuk data keluarga, anggota, dan pelayanan kesehatan.',
+      },
+      {
+        property: 'og:type',
+        content: 'website',
+      },
+      {
+        property: 'og:site_name',
+        content: 'GKJ Slogohimo',
+      },
+      {
+        property: 'og:image',
+        content: '/icons/pwa-512x512.png',
       },
     ],
 
@@ -75,6 +121,33 @@ export const Route = createRootRoute({
       {
         rel: 'stylesheet',
         href: appCss,
+      },
+      {
+        rel: 'manifest',
+        href: '/manifest.webmanifest',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '16x16',
+        href: '/icons/favicon-16x16.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '32x32',
+        href: '/icons/favicon-32x32.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '48x48',
+        href: '/icons/favicon-48x48.png',
+      },
+      {
+        rel: 'apple-touch-icon',
+        sizes: '180x180',
+        href: '/icons/apple-touch-icon.png',
       },
     ],
   }),

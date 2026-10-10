@@ -1,0 +1,54 @@
+{
+  "name": "Sistem Data Jemaat GKJ Slogohimo",
+  "short_name": "GKJ Slogohimo",
+  "description": "Sistem pengelolaan data jemaat GKJ Slogohimo.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Data KK",
+      "short_name": "Data KK",
+      "url": "/data-kk"
+    },
+    {
+      "name": "Data Anggota",
+      "short_name": "Anggota",
+      "url": "/data-anggota"
+    },
+    {
+      "name": "Kesehatan",
+      "short_name": "Kesehatan",
+      "url": "/event-kesehatan"
+    }
+  ]
+}
