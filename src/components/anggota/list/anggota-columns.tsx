@@ -37,7 +37,15 @@ export const anggotaColumns: ColumnDef<AnggotaListItem>[] = [
 
     cell: ({ row }) => (
       <div className="min-w-47.5">
-        <div className="font-semibold text-slate-900">{row.original.nama}</div>
+        <Link
+          to="/data-anggota/$id"
+          params={{
+            id: String(row.original.id),
+          }}
+          className="font-semibold text-slate-900 transition-colors hover:text-primary hover:underline"
+        >
+          {row.original.nama}
+        </Link>
 
         <div className="mt-1 text-xs text-muted-foreground">
           Anggota #{row.original.no}
